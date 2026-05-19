@@ -15,7 +15,7 @@ export function Navbar() {
     const chars = "ｦｧｨｩ⚔️⚡🤖👾武士道影斬剣魂";
     let iterations = 0;
     if (playIntervalRef.current) clearInterval(playIntervalRef.current);
-    
+
     playIntervalRef.current = setInterval(() => {
       setPlayBtnText(
         "PLAY NOW"
@@ -27,7 +27,7 @@ export function Navbar() {
           })
           .join("")
       );
-      
+
       iterations += 0.8;
       if (iterations >= "PLAY NOW".length) {
         if (playIntervalRef.current) clearInterval(playIntervalRef.current);
@@ -79,7 +79,7 @@ export function Navbar() {
         // Warm Triangle Sub-Bass oscillator (detuned slightly for rich chorusing)
         const osc2 = ctx.createOscillator();
         osc2.type = 'triangle';
-        osc2.frequency.setValueAtTime(55.4, ctx.currentTime); 
+        osc2.frequency.setValueAtTime(55.4, ctx.currentTime);
         osc2.connect(filter);
         osc2.start();
         oscRef2.current = osc2;
@@ -89,7 +89,7 @@ export function Navbar() {
         lfo.frequency.setValueAtTime(0.06, ctx.currentTime); // 0.06Hz - very slow cycle
         const lfoGain = ctx.createGain();
         lfoGain.gain.setValueAtTime(30, ctx.currentTime); // Modulates frequency between 80Hz and 140Hz
-        
+
         lfo.connect(lfoGain);
         lfoGain.connect(filter.frequency);
         lfo.start();
@@ -137,7 +137,8 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/95 to-transparent backdrop-blur-sm select-none">
       {/* Visualizer and High-Tech Button CSS style tag */}
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes bar-wave {
           0% { height: 2px; }
           100% { height: 10px; }
@@ -203,24 +204,24 @@ export function Navbar() {
 
         {/* Navigation Links with Cyberpunk Style */}
         <div className="hidden md:flex items-center gap-10 font-mono text-base tracking-[0.28em] relative">
-          <button 
-            onClick={() => handleScrollTo('#hero')} 
+          <button
+            onClick={() => handleScrollTo('#hero')}
             className="text-white/80 hover:text-white hover:drop-shadow-[0_0_12px_#FF0000] transition-all duration-300 cursor-none uppercase relative group"
             style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}
           >
             HOME
             <span className="absolute -bottom-1.5 left-0 w-0 h-[3px] bg-[#FF0000] shadow-[0_0_10px_#FF0000] group-hover:w-full transition-all duration-300"></span>
           </button>
-          <button 
-            onClick={() => handleScrollTo('#lore')} 
+          <button
+            onClick={() => handleScrollTo('#lore')}
             className="text-white/80 hover:text-white hover:drop-shadow-[0_0_12px_#FF0000] transition-all duration-300 cursor-none uppercase relative group"
             style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}
           >
             LORE
             <span className="absolute -bottom-1.5 left-0 w-0 h-[3px] bg-[#FF0000] shadow-[0_0_10px_#FF0000] group-hover:w-full transition-all duration-300"></span>
           </button>
-          <button 
-            onClick={() => handleScrollTo('#showcase')} 
+          <button
+            onClick={() => handleScrollTo('#showcase')}
             className="text-white/80 hover:text-white hover:drop-shadow-[0_0_12px_#FF0000] transition-all duration-300 cursor-none uppercase relative group"
             style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}
           >
@@ -231,20 +232,19 @@ export function Navbar() {
 
         <div className="flex items-center gap-6">
           {/* Cyberpunk Audio HUD Switch */}
-          <button 
+          <button
             onClick={toggleAudio}
-            className={`relative border-2 px-5 py-2.5 font-mono text-xs tracking-widest transition-all duration-300 flex items-center gap-2 group ${
-              isPlaying 
-                ? 'border-[#FF0000] text-[#FF0000] shadow-[0_0_15px_rgba(255,0,0,0.4)]' 
+            className={`relative border-2 px-5 py-2.5 font-mono text-xs tracking-widest transition-all duration-300 flex items-center gap-2 group ${isPlaying
+                ? 'border-[#FF0000] text-[#FF0000] shadow-[0_0_15px_rgba(255,0,0,0.4)]'
                 : 'border-white/20 text-white/50 hover:border-white/50 hover:text-white'
-            }`}
+              }`}
             style={{
               clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))'
             }}
           >
             {/* Pulsing indicator */}
             <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-[#FF0000] animate-pulse shadow-[0_0_8px_#FF0000]' : 'bg-white/20'}`}></span>
-            
+
             <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}>
               AUDIO // {isPlaying ? 'SYS_ONLINE' : 'SYS_OFFLINE'}
             </span>
@@ -275,7 +275,7 @@ export function Navbar() {
 
             {/* Right Interactive Chamber: Scramble Button */}
             <button
-              onClick={() => {}}
+              onClick={() => { }}
               onMouseEnter={handlePlayMouseEnter}
               onMouseLeave={handlePlayMouseLeave}
               className="relative text-white hover:text-black bg-black/75 hover:bg-[#FF0000] transition-all duration-300 border border-[#FF0000] px-10 py-3 uppercase tracking-[0.22em] font-bold overflow-hidden group cursor-none nav-play-btn"
@@ -290,13 +290,13 @@ export function Navbar() {
             >
               {/* Top Cyan Sliding Scanning Laser */}
               <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#00FFFF] to-transparent animate-[scan-laser_2s_linear_infinite_reverse]"></div>
-              
+
               {/* Bottom Red Sliding Scanning Laser */}
               <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#FF0000] to-transparent animate-[scan-laser_2s_linear_infinite]"></div>
 
               {/* High-Tech Dot Grid Texture Overlay */}
               <div className="absolute inset-0 bg-[radial-gradient(rgba(255,0,0,0.18)_1.2px,transparent_1.2px)] bg-[size:5px_5px] opacity-40 group-hover:opacity-0 transition-opacity"></div>
-              
+
               {/* Sliding metallic shine */}
               <span className="absolute inset-0 block w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
 

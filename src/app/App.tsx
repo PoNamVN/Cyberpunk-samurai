@@ -1,13 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { LoreSection } from './components/LoreSection';
 import { CharacterShowcase } from './components/CharacterShowcase';
 import { CustomCursor } from './components/ui/CustomCursor';
+import { FallingKanjisAmbient } from './components/FallingKanjisAmbient';
 import { Footer } from './components/Footer';
 
 export default function App() {
+  const [burstTrigger, setBurstTrigger] = useState(0);
   const gridRef = useRef<HTMLDivElement>(null);
   const particlesRef = useRef<HTMLDivElement>(null);
 
@@ -19,7 +21,7 @@ export default function App() {
 
       // Move grid with subtle parallax (3D background depth)
       gsap.to(gridRef.current, {
-        x: xPercent * 25, 
+        x: xPercent * 25,
         y: yPercent * 25,
         duration: 0.8,
         ease: 'power2.out',
@@ -28,7 +30,7 @@ export default function App() {
 
       // Move particles with larger parallax in opposite direction (foreground layer feel)
       gsap.to(particlesRef.current, {
-        x: -xPercent * 45, 
+        x: -xPercent * 45,
         y: -yPercent * 45,
         duration: 1.2,
         ease: 'power2.out',
@@ -43,7 +45,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* 1. Parallax Glowing Cyber Grid Background */}
-      <div 
+      <div
         ref={gridRef}
         className="fixed inset-[-10%] pointer-events-none z-0 opacity-25"
         style={{
@@ -72,12 +74,15 @@ export default function App() {
         <div className="absolute top-[70%] right-[25%] w-0.5 h-0.5 bg-[#FF0000] blur-sm animate-pulse" style={{ animationDelay: '2.6s', animationDuration: '4s' }}></div>
       </div>
 
+      {/* Ambient Interactive Falling Kanjis */}
+      <FallingKanjisAmbient burstTrigger={burstTrigger} />
+
       {/* Custom Gaming Cursor */}
       <CustomCursor />
 
       {/* Content */}
       <div className="relative z-10">
-        <Navbar />
+        <Navbar onPlayClick={() => setBurstTrigger((prev) => prev + 1)} />
         <div id="hero"><HeroSection /></div>
         <div id="lore"><LoreSection /></div>
         <div id="showcase"><CharacterShowcase /></div>
