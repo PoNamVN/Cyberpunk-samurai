@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 
-export function Navbar() {
+export function Navbar({ onPlayClick }: { onPlayClick?: () => void }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
@@ -190,7 +190,7 @@ export function Navbar() {
 
           {/* Futuristic Cyberpunk Chamfered Stroke Button */}
           <button
-            onClick={() => handleScrollTo('#showcase')}
+            onClick={onPlayClick}
             className="relative text-white hover:text-black bg-[#FF0000]/10 hover:bg-[#FF0000] transition-all duration-300 border-2 border-[#FF0000] px-10 py-3.5 uppercase tracking-[0.25em] font-bold shadow-[0_0_15px_rgba(255,0,0,0.3)] hover:shadow-[0_0_30px_rgba(255,0,0,0.85)] overflow-hidden group cursor-none"
             style={{
               fontFamily: 'Oswald, sans-serif',
