@@ -2,11 +2,44 @@ import { useState, useRef } from 'react';
 
 export function Navbar({ onPlayClick }: { onPlayClick?: () => void }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playBtnText, setPlayBtnText] = useState("PLAY NOW");
+  const playIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const audioCtxRef = useRef<AudioContext | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
   const oscRef1 = useRef<OscillatorNode | null>(null);
   const oscRef2 = useRef<OscillatorNode | null>(null);
   const lfoRef = useRef<OscillatorNode | null>(null);
+
+  const handlePlayMouseEnter = () => {
+    const chars = "ｦｧｨｩ⚔️⚡🤖👾武士道影斬剣魂";
+    let iterations = 0;
+    if (playIntervalRef.current) clearInterval(playIntervalRef.current);
+    
+    playIntervalRef.current = setInterval(() => {
+      setPlayBtnText(
+        "PLAY NOW"
+          .split("")
+          .map((char, index) => {
+            if (index < iterations) return "PLAY NOW"[index];
+            if (char === " ") return " ";
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("")
+      );
+      
+      iterations += 0.8;
+      if (iterations >= "PLAY NOW".length) {
+        if (playIntervalRef.current) clearInterval(playIntervalRef.current);
+        setPlayBtnText("PLAY NOW");
+      }
+    }, 30);
+  };
+
+  const handlePlayMouseLeave = () => {
+    if (playIntervalRef.current) clearInterval(playIntervalRef.current);
+    setPlayBtnText("PLAY NOW");
+  };
 
   const handleScrollTo = (selector: string) => {
     const element = document.querySelector(selector);
@@ -103,41 +136,49 @@ export function Navbar({ onPlayClick }: { onPlayClick?: () => void }) {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/95 to-transparent backdrop-blur-sm select-none">
-      {/* Visualizer and Glitch Button CSS style tag */}
+      {/* Visualizer and High-Tech Button CSS style tag */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes bar-wave {
           0% { height: 2px; }
           100% { height: 10px; }
         }
+        @keyframes scan-laser {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        @keyframes neon-glow-pulse {
+          0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.2), inset 0 0 5px rgba(255,0,0,0.1); }
+          50% { box-shadow: 0 0 22px rgba(255, 0, 0, 0.65), inset 0 0 10px rgba(255,0,0,0.3); }
+        }
         @keyframes play-glitch-1 {
-          0% { clip-path: inset(30% 0 65% 0); transform: translate(-3px, -2px); }
-          20% { clip-path: inset(88% 0 2% 0); transform: translate(2px, 3px); }
-          40% { clip-path: inset(10% 0 85% 0); transform: translate(-2px, -3px); }
-          60% { clip-path: inset(75% 0 8% 0); transform: translate(3px, 1px); }
-          80% { clip-path: inset(5% 0 90% 0); transform: translate(-3px, 2px); }
-          100% { clip-path: inset(30% 0 65% 0); transform: translate(-3px, -2px); }
+          0% { clip-path: inset(30% 0 65% 0); transform: translate(-4px, -2px); }
+          20% { clip-path: inset(88% 0 2% 0); transform: translate(2px, 4px); }
+          40% { clip-path: inset(10% 0 85% 0); transform: translate(-2px, -4px); }
+          60% { clip-path: inset(75% 0 8% 0); transform: translate(4px, 2px); }
+          80% { clip-path: inset(5% 0 90% 0); transform: translate(-4px, 2px); }
+          100% { clip-path: inset(30% 0 65% 0); transform: translate(-4px, -2px); }
         }
         @keyframes play-glitch-2 {
-          0% { clip-path: inset(20% 0 60% 0); transform: translate(3px, 2px); }
-          20% { clip-path: inset(65% 0 15% 0); transform: translate(-2px, -3px); }
-          40% { clip-path: inset(8% 0 80% 0); transform: translate(2px, 3px); }
-          60% { clip-path: inset(80% 0 4% 0); transform: translate(-3px, -2px); }
-          80% { clip-path: inset(15% 0 68% 0); transform: translate(3px, -2px); }
-          100% { clip-path: inset(20% 0 60% 0); transform: translate(3px, 2px); }
+          0% { clip-path: inset(20% 0 60% 0); transform: translate(4px, 2px); }
+          20% { clip-path: inset(65% 0 15% 0); transform: translate(-2px, -4px); }
+          40% { clip-path: inset(8% 0 80% 0); transform: translate(2px, 4px); }
+          60% { clip-path: inset(80% 0 4% 0); transform: translate(-4px, -2px); }
+          80% { clip-path: inset(15% 0 68% 0); transform: translate(4px, -2px); }
+          100% { clip-path: inset(20% 0 60% 0); transform: translate(4px, 2px); }
         }
         .nav-play-glitch-1 {
           display: none;
         }
         .nav-play-btn:hover .nav-play-glitch-1 {
           display: flex;
-          animation: play-glitch-1 0.2s infinite linear alternate-reverse;
+          animation: play-glitch-1 0.22s infinite linear alternate-reverse;
         }
         .nav-play-glitch-2 {
           display: none;
         }
         .nav-play-btn:hover .nav-play-glitch-2 {
           display: flex;
-          animation: play-glitch-2 0.16s infinite linear alternate-reverse;
+          animation: play-glitch-2 0.18s infinite linear alternate-reverse;
         }
       `}} />
 
@@ -218,64 +259,85 @@ export function Navbar({ onPlayClick }: { onPlayClick?: () => void }) {
             )}
           </button>
 
-          {/* Cybernetic Play Now Button with High-Tech Laser Glitch & Blinking Beacon */}
-          <button
-            onClick={onPlayClick}
-            className="relative text-white hover:text-black bg-black/60 hover:bg-[#FF0000] transition-all duration-300 border border-[#FF0000] px-9 py-3 uppercase tracking-[0.22em] font-bold shadow-[0_0_12px_rgba(255,0,0,0.25)] hover:shadow-[0_0_25px_rgba(255,0,0,0.85)] overflow-hidden group cursor-none nav-play-btn"
-            style={{
-              fontFamily: 'Oswald, sans-serif',
-              fontWeight: 700,
-              borderRadius: '0px',
-              clipPath: 'polygon(12px 0px, 100% 0px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0px 100%, 0px 12px)'
-            }}
-          >
-            {/* Cyber Dot Matrix Background Pattern */}
-            <div className="absolute inset-0 bg-[radial-gradient(rgba(255,0,0,0.15)_1px,transparent_1px)] bg-[size:6px_6px] opacity-40 group-hover:opacity-0 transition-opacity"></div>
-            
-            {/* Ambient scanning grid line */}
-            <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(255,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-30 group-hover:opacity-0 transition-opacity"></div>
-            
-            {/* Sliding laser reflection sheen */}
-            <span className="absolute inset-0 block w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
+          {/* Ultra-Premium Dual-Chassis Play Widget */}
+          <div className="flex items-center pointer-events-auto">
+            {/* Left Indicator Chamber: Pulse Beacon */}
+            <div className="bg-[#FF0000]/10 border-t border-b border-l border-[#FF0000]/40 text-[#FF0000] font-mono text-[9px] px-3.5 py-4 tracking-widest hidden lg:flex items-center justify-center gap-1.5 font-bold shadow-[inset_0_0_8px_rgba(255,0,0,0.1)]"
+              style={{
+                clipPath: 'polygon(8px 0px, 100% 0px, 100% 100%, 0px 100%, 0px 8px)',
+                borderRight: 'none',
+                height: '47.5px'
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF0000] animate-[ping_1.2s_infinite]"></span>
+              [SYS_01]
+            </div>
 
-            {/* Text Content + Cyber Beacon Dot */}
-            <span className="relative z-10 flex items-center gap-2 group-hover:opacity-0 transition-opacity duration-200 justify-center">
-              <span className="w-2 h-2 rounded-full bg-[#FF0000] animate-pulse shadow-[0_0_6px_#FF0000]"></span>
-              PLAY NOW
-            </span>
-            <span className="absolute inset-0 flex items-center justify-center bg-white text-black font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 gap-2">
-              <span className="w-2 h-2 rounded-full bg-black animate-ping"></span>
-              PLAY NOW
-            </span>
-
-            {/* Glitch Channel 1 (Cyan shadow) */}
-            <span className="absolute inset-0 bg-[#00FFFF] text-black px-9 py-3 uppercase tracking-[0.22em] font-bold border border-[#00FFFF] pointer-events-none nav-play-glitch-1 z-0 flex items-center justify-center"
+            {/* Right Interactive Chamber: Scramble Button */}
+            <button
+              onClick={onPlayClick}
+              onMouseEnter={handlePlayMouseEnter}
+              onMouseLeave={handlePlayMouseLeave}
+              className="relative text-white hover:text-black bg-black/75 hover:bg-[#FF0000] transition-all duration-300 border border-[#FF0000] px-10 py-3 uppercase tracking-[0.22em] font-bold overflow-hidden group cursor-none nav-play-btn"
               style={{
                 fontFamily: 'Oswald, sans-serif',
                 fontWeight: 700,
                 borderRadius: '0px',
-                clipPath: 'polygon(12px 0px, 100% 0px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0px 100%, 0px 12px)',
-                top: '-2px',
-                left: '-2px'
+                clipPath: 'polygon(0px 0px, calc(100% - 12px) 0px, 100% 12px, 100% 100%, 0px 100%, 0px 0px)',
+                animation: 'neon-glow-pulse 4s infinite ease-in-out',
+                height: '47.5px'
               }}
             >
-              PLAY NOW
-            </span>
+              {/* Top Cyan Sliding Scanning Laser */}
+              <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#00FFFF] to-transparent animate-[scan-laser_2s_linear_infinite_reverse]"></div>
+              
+              {/* Bottom Red Sliding Scanning Laser */}
+              <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#FF0000] to-transparent animate-[scan-laser_2s_linear_infinite]"></div>
 
-            {/* Glitch Channel 2 (Magenta shadow) */}
-            <span className="absolute inset-0 bg-[#FF00FF] text-white px-9 py-3 uppercase tracking-[0.22em] font-bold border border-[#FF00FF] pointer-events-none nav-play-glitch-2 z-0 flex items-center justify-center"
-              style={{
-                fontFamily: 'Oswald, sans-serif',
-                fontWeight: 700,
-                borderRadius: '0px',
-                clipPath: 'polygon(12px 0px, 100% 0px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0px 100%, 0px 12px)',
-                top: '2px',
-                left: '2px'
-              }}
-            >
-              PLAY NOW
-            </span>
-          </button>
+              {/* High-Tech Dot Grid Texture Overlay */}
+              <div className="absolute inset-0 bg-[radial-gradient(rgba(255,0,0,0.18)_1.2px,transparent_1.2px)] bg-[size:5px_5px] opacity-40 group-hover:opacity-0 transition-opacity"></div>
+              
+              {/* Sliding metallic shine */}
+              <span className="absolute inset-0 block w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
+
+              {/* Main Scrambling Decryption Text Label */}
+              <span className="relative z-10 flex items-center justify-center gap-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] font-extrabold group-hover:opacity-0 transition-opacity duration-200">
+                {playBtnText}
+              </span>
+              <span className="absolute inset-0 flex items-center justify-center bg-white text-black font-extrabold opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping"></span>
+                PLAY NOW
+              </span>
+
+              {/* Glitch Overlay 1 (Cyan Shadow) */}
+              <span className="absolute inset-0 bg-[#00FFFF] text-black px-10 py-3 uppercase tracking-[0.22em] font-bold border border-[#00FFFF] pointer-events-none nav-play-glitch-1 z-0 flex items-center justify-center"
+                style={{
+                  fontFamily: 'Oswald, sans-serif',
+                  fontWeight: 700,
+                  borderRadius: '0px',
+                  clipPath: 'polygon(0px 0px, calc(100% - 12px) 0px, 100% 12px, 100% 100%, 0px 100%, 0px 0px)',
+                  top: '-2.5px',
+                  left: '-2.5px'
+                }}
+              >
+                PLAY NOW
+              </span>
+
+              {/* Glitch Overlay 2 (Magenta Shadow) */}
+              <span className="absolute inset-0 bg-[#FF00FF] text-white px-10 py-3 uppercase tracking-[0.22em] font-bold border border-[#FF00FF] pointer-events-none nav-play-glitch-2 z-0 flex items-center justify-center"
+                style={{
+                  fontFamily: 'Oswald, sans-serif',
+                  fontWeight: 700,
+                  borderRadius: '0px',
+                  clipPath: 'polygon(0px 0px, calc(100% - 12px) 0px, 100% 12px, 100% 100%, 0px 100%, 0px 0px)',
+                  top: '2.5px',
+                  left: '2.5px'
+                }}
+              >
+                PLAY NOW
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </nav>
