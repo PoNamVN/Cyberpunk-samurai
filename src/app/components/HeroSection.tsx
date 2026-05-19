@@ -47,6 +47,7 @@ export function HeroSection() {
     width: number;
     life: number;
     maxLife: number;
+    glowColor: string;
   }
 
   const sparksRef = useRef<Spark[]>([]);
@@ -150,24 +151,39 @@ export function HeroSection() {
           continue;
         }
 
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = s.width * s.alpha;
+        ctx.save();
         ctx.lineCap = 'round';
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = s.life % 2 === 0 ? '#00FFFF' : '#FF0000';
         
+        // 1. Soft Outer Neon Glow
+        ctx.strokeStyle = s.glowColor;
+        ctx.lineWidth = (s.width * 3.5) * s.alpha;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = s.glowColor;
+        ctx.globalAlpha = s.alpha * 0.45;
         ctx.beginPath();
         ctx.moveTo(s.startX, s.startY);
         ctx.lineTo(s.endX, s.endY);
         ctx.stroke();
 
-        ctx.strokeStyle = s.life % 2 === 0 ? '#00FFFF' : '#FF0000';
-        ctx.lineWidth = (s.width * 2) * s.alpha;
-        ctx.shadowBlur = 30;
+        // 2. Razor-Thin Pure White Core with Gradient Taper
+        const grad = ctx.createLinearGradient(s.startX, s.startY, s.endX, s.endY);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        grad.addColorStop(0.2, s.glowColor);
+        grad.addColorStop(0.5, '#FFFFFF');
+        grad.addColorStop(0.8, s.glowColor);
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = s.width * 0.75 * s.alpha;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#FFFFFF';
+        ctx.globalAlpha = s.alpha;
         ctx.beginPath();
         ctx.moveTo(s.startX, s.startY);
         ctx.lineTo(s.endX, s.endY);
         ctx.stroke();
+
+        ctx.restore();
       }
 
       // Draw and update sparks
@@ -231,24 +247,27 @@ export function HeroSection() {
     const endX = x + Math.cos(angleRad) * (length / 2);
     const endY = y + Math.sin(angleRad) * (length / 2);
 
+    const colors = ['#FF0000', '#00FFFF', '#FFFFFF', '#FF3D00'];
+    const chosenColor = colors[Math.floor(Math.random() * colors.length)];
+
     slashesRef.current.push({
       startX,
       startY,
       endX,
       endY,
       alpha: 1,
-      width: 4,
-      life: 20,
-      maxLife: 20
+      width: 3.5, // Slightly thinner for cleaner razor stroke
+      life: 15, // Snappy 15-frame fade
+      maxLife: 15,
+      glowColor: chosenColor
     });
 
-    const count = 30;
-    const colors = ['#FF0000', '#00FFFF', '#FFFFFF', '#FF3D00'];
+    const count = 16; // Elegant, reduced count of sparks
     for (let i = 0; i < count; i++) {
       const angle = angleRad + (Math.random() * 0.8 - 0.4) + Math.PI;
-      const speed = Math.random() * 8 + 4;
-      const size = Math.random() * 2.5 + 1.2;
-      const life = Math.random() * 25 + 20;
+      const speed = Math.random() * 6 + 3; // Refined explosion speed
+      const size = Math.random() * 1.5 + 0.8; // Small, delicate embers
+      const life = Math.random() * 16 + 12; // Snappy spark lifetime
 
       sparksRef.current.push({
         x,
@@ -535,7 +554,7 @@ export function HeroSection() {
     <section
       ref={containerRef}
       onMouseDown={handleSectionMouseDown}
-      className="relative h-screen w-full flex items-center overflow-hidden bg-black cursor-crosshair select-none"
+      className="relative h-screen w-full flex items-center overflow-hidden bg-black cursor-none select-none"
     >
       {/* Decrypting Cyber Loader - Glowing Neon Cyberpunk UI */}
       {!isPreloaded && (
