@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
@@ -9,6 +9,7 @@ import { FallingKanjiGame } from './components/FallingKanjiGame';
 import { Footer } from './components/Footer';
 
 export default function App() {
+  const [isGameActive, setIsGameActive] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
   const particlesRef = useRef<HTMLDivElement>(null);
 
@@ -74,14 +75,14 @@ export default function App() {
       </div>
 
       {/* Falling Kanji Game Overlay */}
-      <FallingKanjiGame />
+      <FallingKanjiGame isActive={isGameActive} onClose={() => setIsGameActive(false)} />
 
       {/* Custom Gaming Cursor */}
       <CustomCursor />
 
       {/* Content */}
       <div className="relative z-10">
-        <Navbar />
+        <Navbar onPlayClick={() => setIsGameActive(true)} />
         <div id="hero"><HeroSection /></div>
         <div id="lore"><LoreSection /></div>
         <div id="showcase"><CharacterShowcase /></div>
