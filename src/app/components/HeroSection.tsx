@@ -25,6 +25,255 @@ export function HeroSection() {
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
 
+  // --- Cyber-Slash Screen Slice Engine ---
+  interface Spark {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    color: string;
+    size: number;
+    alpha: number;
+    life: number;
+    maxLife: number;
+  }
+
+  interface SlashLine {
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    alpha: number;
+    width: number;
+    life: number;
+    maxLife: number;
+  }
+
+  const sparksRef = useRef<Spark[]>([]);
+  const slashesRef = useRef<SlashLine[]>([]);
+  const slashCanvasRef = useRef<HTMLCanvasElement>(null);
+  const isSlashLoopRunning = useRef(false);
+
+  // Resize handler for Slash Canvas
+  useEffect(() => {
+    const handleSlashResize = () => {
+      const canvas = slashCanvasRef.current;
+      if (canvas) {
+        canvas.width = canvas.parentElement?.clientWidth || window.innerWidth;
+        canvas.height = canvas.parentElement?.clientHeight || window.innerHeight;
+      }
+    };
+    handleSlashResize();
+    window.addEventListener('resize', handleSlashResize);
+    return () => window.removeEventListener('resize', handleSlashResize);
+  }, []);
+
+  const playCyberSlashSound = () => {
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContextClass();
+      
+      // Heavy resonance lowpass filter
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1400, ctx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.35);
+      filter.Q.setValueAtTime(6, ctx.currentTime);
+
+      // White Noise buffer for the friction/whoosh sound
+      const bufferSize = ctx.sampleRate * 0.35;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      // Noise volume envelope
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.25, ctx.currentTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.35);
+
+      // Sawtooth laser sweep node (metallic edge)
+      const osc = ctx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(950, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(70, ctx.currentTime + 0.3);
+
+      const oscGain = ctx.createGain();
+      oscGain.gain.setValueAtTime(0.18, ctx.currentTime);
+      oscGain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.25);
+
+      // Connect noise and synth
+      noise.connect(noiseGain);
+      noiseGain.connect(filter);
+
+      osc.connect(oscGain);
+      oscGain.connect(filter);
+
+      filter.connect(ctx.destination);
+
+      noise.start();
+      osc.start();
+
+      noise.stop(ctx.currentTime + 0.35);
+      osc.stop(ctx.currentTime + 0.35);
+    } catch (e) {
+      console.warn("AudioContext blocked or failed to initialize", e);
+    }
+  };
+
+  const startSlashLoop = () => {
+    if (isSlashLoopRunning.current) return;
+    isSlashLoopRunning.current = true;
+    
+    const canvas = slashCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const updateAndDraw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const sparks = sparksRef.current;
+      const slashes = slashesRef.current;
+
+      // Draw and update slashes
+      for (let i = slashes.length - 1; i >= 0; i--) {
+        const s = slashes[i];
+        s.life -= 1;
+        s.alpha = s.life / s.maxLife;
+
+        if (s.life <= 0) {
+          slashes.splice(i, 1);
+          continue;
+        }
+
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = s.width * s.alpha;
+        ctx.lineCap = 'round';
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = s.life % 2 === 0 ? '#00FFFF' : '#FF0000';
+        
+        ctx.beginPath();
+        ctx.moveTo(s.startX, s.startY);
+        ctx.lineTo(s.endX, s.endY);
+        ctx.stroke();
+
+        ctx.strokeStyle = s.life % 2 === 0 ? '#00FFFF' : '#FF0000';
+        ctx.lineWidth = (s.width * 2) * s.alpha;
+        ctx.shadowBlur = 30;
+        ctx.beginPath();
+        ctx.moveTo(s.startX, s.startY);
+        ctx.lineTo(s.endX, s.endY);
+        ctx.stroke();
+      }
+
+      // Draw and update sparks
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const p = sparks[i];
+        p.life -= 1;
+        p.alpha = p.life / p.maxLife;
+        
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.12; // gravity
+        p.vx *= 0.98; // friction
+
+        if (p.life <= 0) {
+          sparks.splice(i, 1);
+          continue;
+        }
+
+        ctx.fillStyle = p.color;
+        ctx.shadowBlur = p.size * 3;
+        ctx.shadowColor = p.color;
+        
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * p.alpha, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.shadowBlur = 0;
+
+      if (sparks.length > 0 || slashes.length > 0) {
+        requestAnimationFrame(updateAndDraw);
+      } else {
+        isSlashLoopRunning.current = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    };
+
+    requestAnimationFrame(updateAndDraw);
+  };
+
+  const triggerSlash = (x: number, y: number) => {
+    const canvas = slashCanvasRef.current;
+    if (!canvas) return;
+
+    playCyberSlashSound();
+
+    if (contentRef.current) {
+      const tl = gsap.timeline();
+      tl.to(contentRef.current, { x: gsap.utils.random(-8, 8), y: gsap.utils.random(-8, 8), duration: 0.05 })
+        .to(contentRef.current, { x: gsap.utils.random(-6, 6), y: gsap.utils.random(-6, 6), duration: 0.05 })
+        .to(contentRef.current, { x: gsap.utils.random(-4, 4), y: gsap.utils.random(-4, 4), duration: 0.05 })
+        .to(contentRef.current, { x: 0, y: 0, duration: 0.05 });
+    }
+
+    const isForward = Math.random() > 0.5;
+    const length = Math.max(canvas.width, canvas.height) * 0.45;
+    const angleRad = isForward ? Math.PI / 4 : -Math.PI / 4;
+
+    const startX = x - Math.cos(angleRad) * (length / 2);
+    const startY = y - Math.sin(angleRad) * (length / 2);
+    const endX = x + Math.cos(angleRad) * (length / 2);
+    const endY = y + Math.sin(angleRad) * (length / 2);
+
+    slashesRef.current.push({
+      startX,
+      startY,
+      endX,
+      endY,
+      alpha: 1,
+      width: 4,
+      life: 20,
+      maxLife: 20
+    });
+
+    const count = 30;
+    const colors = ['#FF0000', '#00FFFF', '#FFFFFF', '#FF3D00'];
+    for (let i = 0; i < count; i++) {
+      const angle = angleRad + (Math.random() * 0.8 - 0.4) + Math.PI;
+      const speed = Math.random() * 8 + 4;
+      const size = Math.random() * 2.5 + 1.2;
+      const life = Math.random() * 25 + 20;
+
+      sparksRef.current.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed + (Math.random() * 2 - 1),
+        vy: Math.sin(angle) * speed + (Math.random() * 2 - 1) - 2,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size,
+        alpha: 1,
+        life,
+        maxLife: life
+      });
+    }
+
+    startSlashLoop();
+  };
+
+  const handleSectionMouseDown = (e: React.MouseEvent<HTMLElement>) => {
+    if ((e.target as HTMLElement).closest('button, a')) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+    triggerSlash(clickX, clickY);
+  };
+
   // 1. High-Performance Frame Pre-rendering Engine
   useEffect(() => {
     const video = document.createElement('video');
@@ -283,7 +532,11 @@ export function HeroSection() {
   }, [isPreloaded, frames]);
 
   return (
-    <section ref={containerRef} className="relative h-screen w-full flex items-center overflow-hidden bg-black">
+    <section
+      ref={containerRef}
+      onMouseDown={handleSectionMouseDown}
+      className="relative h-screen w-full flex items-center overflow-hidden bg-black cursor-crosshair select-none"
+    >
       {/* Decrypting Cyber Loader - Glowing Neon Cyberpunk UI */}
       {!isPreloaded && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black">
@@ -326,6 +579,12 @@ export function HeroSection() {
         style={{
           filter: 'brightness(0.65) contrast(1.35) saturate(1.2)',
         }}
+      />
+
+      {/* High-Tech Sword Slash Canvas overlay */}
+      <canvas
+        ref={slashCanvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none z-30"
       />
 
       {/* Cyber Grid CRT Scanline Overlay - stylized subgrid mask hides scaling artifacts */}
