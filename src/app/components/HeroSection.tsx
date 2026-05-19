@@ -10,6 +10,8 @@ export function HeroSection() {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [frames, setFrames] = useState<HTMLImageElement[]>([]);
   const [isPreloaded, setIsPreloaded] = useState(false);
+  const [kanjiText, setKanjiText] = useState('武士道');
+  const [kanjiOpacity, setKanjiOpacity] = useState(0.75);
 
   const containerRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -155,6 +157,8 @@ export function HeroSection() {
     let ctxGsap = gsap.context(() => {
       // Reset text states initially (hidden until scroll progress reaches 50%)
       setIsRevealed(false);
+      setKanjiText("武士道");
+      setKanjiOpacity(0.75);
       gsap.set([titleRef.current, buttonRef.current], {
         opacity: 0,
         scale: 0.95,
@@ -171,6 +175,44 @@ export function HeroSection() {
           scrub: true,
           onUpdate: (self) => {
             targetProgressRef.current = self.progress;
+
+            // Calculate kanji text based on progress
+            const progress = self.progress;
+            if (progress < 0.25) {
+              setKanjiText("武士道");
+              setKanjiOpacity(0.75);
+            } else if (progress >= 0.25 && progress < 0.40) {
+              const ratio = (progress - 0.25) / 0.15; // 0 to 1
+              const original = "武士道";
+              const glitchChars = "ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿ⚔️⚡🤖👾";
+              let currentText = "";
+
+              // Character 0: original < 0.1, scramble < 0.5, blank >= 0.5
+              // Character 1: original < 0.3, scramble < 0.75, blank >= 0.75
+              // Character 2: original < 0.5, scramble < 0.95, blank >= 0.95
+              const thresholds = [
+                { start: 0.1, end: 0.5 },
+                { start: 0.3, end: 0.75 },
+                { start: 0.5, end: 0.95 }
+              ];
+
+              for (let i = 0; i < 3; i++) {
+                const { start, end } = thresholds[i];
+                if (ratio < start) {
+                  currentText += original[i];
+                } else if (ratio < end) {
+                  currentText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                } else {
+                  currentText += " ";
+                }
+              }
+
+              setKanjiText(currentText);
+              setKanjiOpacity(0.75 * (1 - ratio));
+            } else {
+              setKanjiText("   ");
+              setKanjiOpacity(0);
+            }
           }
         }
       });
@@ -179,56 +221,12 @@ export function HeroSection() {
       tl.to({}, { duration: 1 });
 
       // 1. Long Screen Time: Kanji remains stable from progress 0 to 0.25
-      // 2. Glitch Disappear Sequence: rapid digital signal break from progress 0.25 to 0.42
+      // 2. Elegant Dissolve: gentle drift upward from progress 0.25 to 0.40
       tl.to(scrollIndicatorRef.current, {
-        opacity: 0.55,
-        x: -12,
-        skewX: 18,
-        scaleX: 1.1,
-        duration: 0.03
+        y: -60,
+        duration: 0.15,
+        ease: "power1.out"
       }, 0.25);
-
-      tl.to(scrollIndicatorRef.current, {
-        opacity: 0.7,
-        x: 10,
-        skewX: -12,
-        scaleX: 0.9,
-        duration: 0.03
-      }, 0.28);
-
-      tl.to(scrollIndicatorRef.current, {
-        opacity: 0.15,
-        x: -24,
-        skewX: 28,
-        scaleX: 1.3,
-        duration: 0.03
-      }, 0.31);
-
-      tl.to(scrollIndicatorRef.current, {
-        opacity: 0.45,
-        x: 6,
-        skewX: -6,
-        scaleX: 0.95,
-        duration: 0.03
-      }, 0.34);
-
-      tl.to(scrollIndicatorRef.current, {
-        opacity: 0.08,
-        x: -16,
-        skewX: 15,
-        scaleX: 1.25,
-        duration: 0.03
-      }, 0.37);
-
-      tl.to(scrollIndicatorRef.current, {
-        opacity: 0,
-        x: 0,
-        skewX: 0,
-        scaleX: 1,
-        y: -40,
-        duration: 0.05,
-        ease: "power1.in"
-      }, 0.4);
 
       // Reveal title and button at exactly 50% scroll progress
       tl.to([titleRef.current, buttonRef.current], {
@@ -321,14 +319,15 @@ export function HeroSection() {
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#FF0000] blur-[100px] opacity-15"></div>
       </div>
 
-      {/* Initial Japanese Typography - Fades out on scroll with glitch effect */}
+      {/* Initial Japanese Typography - Fades out on scroll with elegant scramble effect */}
       <div
         ref={scrollIndicatorRef}
-        className="absolute left-8 lg:left-[calc((100vw-1440px)/2+32px)] top-[14%] md:top-[12%] z-0 pointer-events-none flex flex-col items-start transition-all duration-75"
+        className="absolute left-8 lg:left-[calc((100vw-1440px)/2+32px)] top-[14%] md:top-[12%] z-0 pointer-events-none flex flex-col items-start"
+        style={{ opacity: kanjiOpacity }}
       >
         {/* Kanji Body with Softer, Premium Ambient Red Neon Glow */}
         <span
-          className="text-[#E53935] opacity-75 font-bold leading-none select-none tracking-[0.15em] drop-shadow-[0_0_15px_rgba(255,0,0,0.35)]"
+          className="text-[#E53935] font-bold leading-none select-none tracking-[0.15em] drop-shadow-[0_0_15px_rgba(255,0,0,0.35)]"
           style={{
             writingMode: 'vertical-rl',
             textOrientation: 'upright',
@@ -337,7 +336,7 @@ export function HeroSection() {
             textShadow: '0px 0px 8px rgba(229,57,53,0.65), 0px 0px 25px rgba(229,57,53,0.3)',
           }}
         >
-          武士道
+          {kanjiText}
         </span>
       </div>
 
