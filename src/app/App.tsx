@@ -1,15 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { LoreSection } from './components/LoreSection';
 import { CharacterShowcase } from './components/CharacterShowcase';
 import { CustomCursor } from './components/ui/CustomCursor';
-import { FallingKanjiGame } from './components/FallingKanjiGame';
 import { Footer } from './components/Footer';
 
 export default function App() {
-  const [isGameActive, setIsGameActive] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
   const particlesRef = useRef<HTMLDivElement>(null);
 
@@ -74,15 +72,12 @@ export default function App() {
         <div className="absolute top-[70%] right-[25%] w-0.5 h-0.5 bg-[#FF0000] blur-sm animate-pulse" style={{ animationDelay: '2.6s', animationDuration: '4s' }}></div>
       </div>
 
-      {/* Falling Kanji Game Overlay */}
-      <FallingKanjiGame isActive={isGameActive} onClose={() => setIsGameActive(false)} />
-
       {/* Custom Gaming Cursor */}
       <CustomCursor />
 
       {/* Content */}
       <div className="relative z-10">
-        <Navbar onPlayClick={() => setIsGameActive(true)} />
+        <Navbar />
         <div id="hero"><HeroSection /></div>
         <div id="lore"><LoreSection /></div>
         <div id="showcase"><CharacterShowcase /></div>

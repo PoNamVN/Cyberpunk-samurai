@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 
-export function Navbar({ onPlayClick }: { onPlayClick?: () => void }) {
+export function Navbar() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [playBtnText, setPlayBtnText] = useState("PLAY NOW");
   const playIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -275,7 +275,7 @@ export function Navbar({ onPlayClick }: { onPlayClick?: () => void }) {
 
             {/* Right Interactive Chamber: Scramble Button */}
             <button
-              onClick={onPlayClick}
+              onClick={() => {}}
               onMouseEnter={handlePlayMouseEnter}
               onMouseLeave={handlePlayMouseLeave}
               className="relative text-white hover:text-black bg-black/75 hover:bg-[#FF0000] transition-all duration-300 border border-[#FF0000] px-10 py-3 uppercase tracking-[0.22em] font-bold overflow-hidden group cursor-none nav-play-btn"
