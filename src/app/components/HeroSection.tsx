@@ -19,6 +19,8 @@ export function HeroSection() {
   const titleRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const lightLeaksRef = useRef<HTMLDivElement>(null);
+  const particlesRef = useRef<HTMLDivElement>(null);
 
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
@@ -105,6 +107,33 @@ export function HeroSection() {
       canvas.height = window.innerHeight;
       drawFrame();
     };
+
+    // Smooth 3D Mouse Parallax Engine using GSAP quickTo (highly optimized, 0.00% lag)
+    const xToContent = gsap.quickTo(contentRef.current, "x", { duration: 0.8, ease: "power3.out" });
+    const yToContent = gsap.quickTo(contentRef.current, "y", { duration: 0.8, ease: "power3.out" });
+    const xToCanvas = gsap.quickTo(canvasRef.current, "x", { duration: 1.2, ease: "power2.out" });
+    const yToCanvas = gsap.quickTo(canvasRef.current, "y", { duration: 1.2, ease: "power2.out" });
+    const xToLight = gsap.quickTo(lightLeaksRef.current, "x", { duration: 1.5, ease: "power1.out" });
+    const yToLight = gsap.quickTo(lightLeaksRef.current, "y", { duration: 1.5, ease: "power1.out" });
+    const xToParticles = gsap.quickTo(particlesRef.current, "x", { duration: 1.0, ease: "power2.out" });
+    const yToParticles = gsap.quickTo(particlesRef.current, "y", { duration: 1.0, ease: "power2.out" });
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      const xNorm = (clientX / window.innerWidth) - 0.5; // range: -0.5 to 0.5
+      const yNorm = (clientY / window.innerHeight) - 0.5;
+
+      xToContent(xNorm * 30);      // Drift foreground content
+      yToContent(yNorm * 30);
+      xToCanvas(xNorm * -15);      // Counter-drift background for stereoscopic 3D depth
+      yToCanvas(yNorm * -15);
+      xToLight(xNorm * 50);       // Large drift for atmospheric light leaks
+      yToLight(yNorm * 50);
+      xToParticles(xNorm * 20);   // Subtle drift for ambient smoke particles
+      yToParticles(yNorm * 20);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
 
     const drawFrame = () => {
       const target = targetProgressRef.current;
@@ -247,6 +276,7 @@ export function HeroSection() {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animId);
       ctxGsap.revert();
     };
@@ -304,7 +334,7 @@ export function HeroSection() {
       ></div>
 
       {/* Smoke and Dust Particles Texture */}
-      <div className="absolute inset-0 opacity-15 pointer-events-none">
+      <div ref={particlesRef} className="absolute inset-0 opacity-15 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-[#FF0000] blur-sm animate-pulse"></div>
         <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-white blur-sm animate-pulse" style={{ animationDelay: '0.5s' }}></div>
         <div className="absolute bottom-1/4 left-1/2 w-1 h-1 bg-[#FF0000] blur-sm animate-pulse" style={{ animationDelay: '1s' }}></div>
@@ -314,10 +344,46 @@ export function HeroSection() {
       </div>
 
       {/* Red Light Leak Effect */}
-      <div className="absolute inset-0 opacity-30 pointer-events-none">
+      <div ref={lightLeaksRef} className="absolute inset-0 opacity-30 pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-[#FF0000] blur-[120px] opacity-20"></div>
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#FF0000] blur-[100px] opacity-15"></div>
       </div>
+
+      {/* Cinematic Cyber HUD UI Overlays (Only visible when fully preloaded) */}
+      {isPreloaded && (
+        <div className="absolute inset-0 z-20 pointer-events-none font-mono text-[9px] tracking-[0.15em] text-[#FF0000]/60 select-none">
+          {/* Corner Brackets */}
+          <div className="absolute top-6 left-6 w-4 h-4 border-t border-l border-[#FF0000]/40"></div>
+          <div className="absolute top-6 right-6 w-4 h-4 border-t border-r border-[#FF0000]/40"></div>
+          <div className="absolute bottom-6 left-6 w-4 h-4 border-b border-l border-[#FF0000]/40"></div>
+          <div className="absolute bottom-6 right-6 w-4 h-4 border-b border-r border-[#FF0000]/40"></div>
+
+          {/* Top-Left: System Telemetry */}
+          <div className="absolute top-6 left-14 hidden md:block">
+            <span className="text-white opacity-40">SYS_ONLINE // </span>
+            <span className="animate-pulse text-[#FF0000]">DECRYPTING_SIGNAL</span>
+          </div>
+
+          {/* Top-Right: Sector Diagnostics */}
+          <div className="absolute top-6 right-14 text-right hidden md:block">
+            <span>SECTOR: 09_BUSHIDO_PROTOCOL</span>
+            <span className="block opacity-40">CALIBRATION // STABLE</span>
+          </div>
+
+          {/* Bottom-Left: Ancient Coordinates */}
+          <div className="absolute bottom-6 left-14 hidden md:block">
+            <span>LAT: 35.0116° N / LON: 135.7681° E</span>
+            <span className="block opacity-40">ANCIENT_CAPITAL_KYOTO // SYNC_OK</span>
+          </div>
+
+          {/* Bottom-Right: Blink Status */}
+          <div className="absolute bottom-6 right-14 text-right hidden md:block flex items-center gap-2">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#FF0000] animate-ping mr-1"></span>
+            <span className="text-white opacity-60">TELEMETRY_TRACKING: </span>
+            <span className="font-bold">ACTIVE</span>
+          </div>
+        </div>
+      )}
 
       {/* Initial Japanese Typography - Fades out on scroll with elegant scramble effect */}
       <div
@@ -365,7 +431,7 @@ export function HeroSection() {
 
         <button
           ref={buttonRef}
-          className="relative bg-[#FF0000] text-white px-24 py-7 text-2xl uppercase tracking-widest hover:bg-white hover:text-black transition-all border-2 border-[#FF0000] shadow-2xl shadow-red-900/60 overflow-hidden group cursor-none"
+          className="relative bg-[#FF0000] text-white px-24 py-7 text-2xl uppercase tracking-widest border-2 border-[#FF0000] shadow-2xl shadow-red-900/60 overflow-hidden group cursor-none transition-colors duration-300"
           style={{
             fontFamily: 'Oswald, sans-serif',
             fontWeight: 700,
@@ -377,9 +443,74 @@ export function HeroSection() {
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}
         >
-          <span className="relative z-10">ENTER THE SYSTEM</span>
+          {/* Main button text */}
+          <span className="relative z-10 block group-hover:opacity-0 transition-opacity duration-200">ENTER THE SYSTEM</span>
+          <span className="absolute inset-0 flex items-center justify-center bg-white text-black font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">ENTER THE SYSTEM</span>
+
+          {/* Glitch Shadow 1 (Cyan Accent) */}
+          <span className="absolute inset-0 bg-[#00FFFF] text-black px-24 py-7 text-2xl uppercase tracking-widest border-2 border-[#00FFFF] pointer-events-none cyber-btn-glitch-1 z-0 flex items-center justify-center"
+            style={{
+              fontFamily: 'Oswald, sans-serif',
+              fontWeight: 700,
+              borderRadius: '0px',
+              clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+              top: '-3px',
+              left: '-3px'
+            }}
+          >
+            ENTER THE SYSTEM
+          </span>
+
+          {/* Glitch Shadow 2 (Magenta Accent) */}
+          <span className="absolute inset-0 bg-[#FF00FF] text-white px-24 py-7 text-2xl uppercase tracking-widest border-2 border-[#FF00FF] pointer-events-none cyber-btn-glitch-2 z-0 flex items-center justify-center"
+            style={{
+              fontFamily: 'Oswald, sans-serif',
+              fontWeight: 700,
+              borderRadius: '0px',
+              clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+              top: '3px',
+              left: '3px'
+            }}
+          >
+            ENTER THE SYSTEM
+          </span>
+
           <div className="absolute top-0 right-0 w-3 h-3 bg-white opacity-0 group-hover:opacity-30 transition-opacity"></div>
         </button>
+
+        {/* Localized Glitch Keyframe CSS Injection */}
+        <style>{`
+          @keyframes cyber-glitch-1 {
+            0% { clip-path: inset(40% 0 61% 0); transform: translate(-5px, -3px); }
+            20% { clip-path: inset(92% 0 1% 0); transform: translate(3px, 5px); }
+            40% { clip-path: inset(15% 0 80% 0); transform: translate(-3px, -5px); }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(5px, 3px); }
+            80% { clip-path: inset(3% 0 92% 0); transform: translate(-5px, 3px); }
+            100% { clip-path: inset(40% 0 61% 0); transform: translate(-5px, -3px); }
+          }
+          @keyframes cyber-glitch-2 {
+            0% { clip-path: inset(25% 0 58% 0); transform: translate(5px, 3px); }
+            20% { clip-path: inset(70% 0 12% 0); transform: translate(-3px, -5px); }
+            40% { clip-path: inset(5% 0 85% 0); transform: translate(3px, 5px); }
+            60% { clip-path: inset(85% 0 2% 0); transform: translate(-5px, -3px); }
+            80% { clip-path: inset(12% 0 70% 0); transform: translate(5px, -3px); }
+            100% { clip-path: inset(25% 0 58% 0); transform: translate(5px, 3px); }
+          }
+          .cyber-btn-glitch-1 {
+            display: none;
+          }
+          .group:hover .cyber-btn-glitch-1 {
+            display: flex;
+            animation: cyber-glitch-1 0.22s infinite linear alternate-reverse;
+          }
+          .cyber-btn-glitch-2 {
+            display: none;
+          }
+          .group:hover .cyber-btn-glitch-2 {
+            display: flex;
+            animation: cyber-glitch-2 0.18s infinite linear alternate-reverse;
+          }
+        `}</style>
       </div>
     </section>
   );
