@@ -25,50 +25,7 @@ export function HeroSection() {
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
 
-  // --- Cyber-Slash Screen Slice Engine ---
-  interface Spark {
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    color: string;
-    size: number;
-    alpha: number;
-    life: number;
-    maxLife: number;
-  }
-
-  interface SlashLine {
-    startX: number;
-    startY: number;
-    endX: number;
-    endY: number;
-    alpha: number;
-    width: number;
-    life: number;
-    maxLife: number;
-    glowColor: string;
-  }
-
-  const sparksRef = useRef<Spark[]>([]);
-  const slashesRef = useRef<SlashLine[]>([]);
-  const slashCanvasRef = useRef<HTMLCanvasElement>(null);
-  const isSlashLoopRunning = useRef(false);
-
-  // Resize handler for Slash Canvas
-  useEffect(() => {
-    const handleSlashResize = () => {
-      const canvas = slashCanvasRef.current;
-      if (canvas) {
-        canvas.width = canvas.parentElement?.clientWidth || window.innerWidth;
-        canvas.height = canvas.parentElement?.clientHeight || window.innerHeight;
-      }
-    };
-    handleSlashResize();
-    window.addEventListener('resize', handleSlashResize);
-    return () => window.removeEventListener('resize', handleSlashResize);
-  }, []);
-
+  // --- Cyber-Slash Sound & Screen Shake Integration ---
   const playCyberSlashSound = () => {
     try {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -125,111 +82,11 @@ export function HeroSection() {
     }
   };
 
-  const startSlashLoop = () => {
-    if (isSlashLoopRunning.current) return;
-    isSlashLoopRunning.current = true;
-    
-    const canvas = slashCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const updateAndDraw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const sparks = sparksRef.current;
-      const slashes = slashesRef.current;
-
-      // Draw and update slashes
-      for (let i = slashes.length - 1; i >= 0; i--) {
-        const s = slashes[i];
-        s.life -= 1;
-        s.alpha = s.life / s.maxLife;
-
-        if (s.life <= 0) {
-          slashes.splice(i, 1);
-          continue;
-        }
-
-        ctx.save();
-        ctx.lineCap = 'round';
-        
-        // 1. Soft Outer Neon Glow
-        ctx.strokeStyle = s.glowColor;
-        ctx.lineWidth = (s.width * 3.5) * s.alpha;
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = s.glowColor;
-        ctx.globalAlpha = s.alpha * 0.45;
-        ctx.beginPath();
-        ctx.moveTo(s.startX, s.startY);
-        ctx.lineTo(s.endX, s.endY);
-        ctx.stroke();
-
-        // 2. Razor-Thin Pure White Core with Gradient Taper
-        const grad = ctx.createLinearGradient(s.startX, s.startY, s.endX, s.endY);
-        grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
-        grad.addColorStop(0.2, s.glowColor);
-        grad.addColorStop(0.5, '#FFFFFF');
-        grad.addColorStop(0.8, s.glowColor);
-        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = s.width * 0.75 * s.alpha;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = '#FFFFFF';
-        ctx.globalAlpha = s.alpha;
-        ctx.beginPath();
-        ctx.moveTo(s.startX, s.startY);
-        ctx.lineTo(s.endX, s.endY);
-        ctx.stroke();
-
-        ctx.restore();
-      }
-
-      // Draw and update sparks
-      for (let i = sparks.length - 1; i >= 0; i--) {
-        const p = sparks[i];
-        p.life -= 1;
-        p.alpha = p.life / p.maxLife;
-        
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.12; // gravity
-        p.vx *= 0.98; // friction
-
-        if (p.life <= 0) {
-          sparks.splice(i, 1);
-          continue;
-        }
-
-        ctx.fillStyle = p.color;
-        ctx.shadowBlur = p.size * 3;
-        ctx.shadowColor = p.color;
-        
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * p.alpha, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      ctx.shadowBlur = 0;
-
-      if (sparks.length > 0 || slashes.length > 0) {
-        requestAnimationFrame(updateAndDraw);
-      } else {
-        isSlashLoopRunning.current = false;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    };
-
-    requestAnimationFrame(updateAndDraw);
-  };
-
-  const triggerSlash = (x: number, y: number) => {
-    const canvas = slashCanvasRef.current;
-    if (!canvas) return;
-
+  const triggerSlash = () => {
+    // 1. Play Dynamic Cyber katana slash Whoosh Sound
     playCyberSlashSound();
 
+    // 2. Camera Shake (Simulate physical impact on HUD & Title content)
     if (contentRef.current) {
       const tl = gsap.timeline();
       tl.to(contentRef.current, { x: gsap.utils.random(-8, 8), y: gsap.utils.random(-8, 8), duration: 0.05 })
@@ -237,60 +94,11 @@ export function HeroSection() {
         .to(contentRef.current, { x: gsap.utils.random(-4, 4), y: gsap.utils.random(-4, 4), duration: 0.05 })
         .to(contentRef.current, { x: 0, y: 0, duration: 0.05 });
     }
-
-    const isForward = Math.random() > 0.5;
-    const length = Math.max(canvas.width, canvas.height) * 0.45;
-    const angleRad = isForward ? Math.PI / 4 : -Math.PI / 4;
-
-    const startX = x - Math.cos(angleRad) * (length / 2);
-    const startY = y - Math.sin(angleRad) * (length / 2);
-    const endX = x + Math.cos(angleRad) * (length / 2);
-    const endY = y + Math.sin(angleRad) * (length / 2);
-
-    const colors = ['#FF0000', '#00FFFF', '#FFFFFF', '#FF3D00'];
-    const chosenColor = colors[Math.floor(Math.random() * colors.length)];
-
-    slashesRef.current.push({
-      startX,
-      startY,
-      endX,
-      endY,
-      alpha: 1,
-      width: 3.5, // Slightly thinner for cleaner razor stroke
-      life: 15, // Snappy 15-frame fade
-      maxLife: 15,
-      glowColor: chosenColor
-    });
-
-    const count = 16; // Elegant, reduced count of sparks
-    for (let i = 0; i < count; i++) {
-      const angle = angleRad + (Math.random() * 0.8 - 0.4) + Math.PI;
-      const speed = Math.random() * 6 + 3; // Refined explosion speed
-      const size = Math.random() * 1.5 + 0.8; // Small, delicate embers
-      const life = Math.random() * 16 + 12; // Snappy spark lifetime
-
-      sparksRef.current.push({
-        x,
-        y,
-        vx: Math.cos(angle) * speed + (Math.random() * 2 - 1),
-        vy: Math.sin(angle) * speed + (Math.random() * 2 - 1) - 2,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        size,
-        alpha: 1,
-        life,
-        maxLife: life
-      });
-    }
-
-    startSlashLoop();
   };
 
   const handleSectionMouseDown = (e: React.MouseEvent<HTMLElement>) => {
     if ((e.target as HTMLElement).closest('button, a')) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
-    triggerSlash(clickX, clickY);
+    triggerSlash();
   };
 
   // 1. High-Performance Frame Pre-rendering Engine
@@ -600,11 +408,7 @@ export function HeroSection() {
         }}
       />
 
-      {/* High-Tech Sword Slash Canvas overlay */}
-      <canvas
-        ref={slashCanvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none z-30"
-      />
+
 
       {/* Cyber Grid CRT Scanline Overlay - stylized subgrid mask hides scaling artifacts */}
       <div
