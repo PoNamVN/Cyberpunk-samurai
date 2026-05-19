@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrambleText } from './ui/ScrambleText';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,9 +15,20 @@ interface Character {
   skill: number;
   quote: string;
   imagePlaceholder: string;
+  faction: string;
+  weapon: string;
+  specialty: string;
+  backstory: string;
+  fullStats: {
+    speed: number;
+    stealth: number;
+    hacking: number;
+    survival: number;
+    tactics: number;
+  };
 }
 
-// --- MOCK DATA ---
+// --- DEEP FACTION & LORE MOCK DATA ---
 const characters: Character[] = [
   {
     id: 1,
@@ -26,7 +38,18 @@ const characters: Character[] = [
     power: 92,
     skill: 88,
     quote: "\"The shadow is my only ally.\"",
-    imagePlaceholder: "/images/3.jpg"
+    imagePlaceholder: "/images/3.jpg",
+    faction: "NEO-KYOTO RESISTANCE (UNDERGROUND)",
+    weapon: "MURAMASA-V3 THERMAL PLASMA KATANA",
+    specialty: "INFILTRATION / ASSASSINATION",
+    backstory: "Born in the deep lightless slums of Neo-Kyoto, Kira was augment-trained by the shadow syndicates before going rogue. She operates as a silent vigilante, dismantling corrupt corporate power structures from the darkness under the city. Legend says she can bypass any laser security grid in exactly three seconds.",
+    fullStats: {
+      speed: 96,
+      stealth: 98,
+      hacking: 78,
+      survival: 85,
+      tactics: 84
+    }
   },
   {
     id: 2,
@@ -36,7 +59,18 @@ const characters: Character[] = [
     power: 98,
     skill: 75,
     quote: "\"Armor won't save you.\"",
-    imagePlaceholder: "/images/4.jpg"
+    imagePlaceholder: "/images/4.jpg",
+    faction: "SHIN-KAIZA HEAVY COALITION",
+    weapon: "VALKYRIE-MK4 THERMO-BARIC CANNON",
+    specialty: "HEAVY ASSAULT / DEMOLITIONS",
+    backstory: "An ex-military enforcer who survived the devastating Sector 9 cyber-wars. Rebuilt with 75% military-grade titanium prosthetics, Ryker now operates as a high-price heavy mercenary for the Shin-Kaiza cartel. He is a walking tank, crushing syndicate walls and armored barricades with high-yield thermal warfare.",
+    fullStats: {
+      speed: 68,
+      stealth: 35,
+      hacking: 55,
+      survival: 95,
+      tactics: 88
+    }
   },
   {
     id: 3,
@@ -46,11 +80,20 @@ const characters: Character[] = [
     power: 85,
     skill: 95,
     quote: "\"The code is flawed, just like your technique.\"",
-    imagePlaceholder: "/images/5.jpg"
+    imagePlaceholder: "/images/5.jpg",
+    faction: "REBEL NET-RUNNERS SYNDICATE",
+    weapon: "NEXUS-X9 COLD-CHAIN ELECTRO-WHIPS",
+    specialty: "QUANTUM NETRUNNING / SYSTEM CRACKING",
+    backstory: "A brilliant cybernetic prodigy and ronin netrunner who escaped the corporate data farms of Neo-Kyoto. Yuki manipulates high-voltage energy grids and bends secure networks to her will in real-time. Her neural deck directly interfaces with the city's power grid, calling down digital storms on her targets.",
+    fullStats: {
+      speed: 90,
+      stealth: 82,
+      hacking: 99,
+      survival: 76,
+      tactics: 92
+    }
   }
 ];
-
-import { ScrambleText } from './ui/ScrambleText';
 
 export function CharacterShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -59,6 +102,7 @@ export function CharacterShowcase() {
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   
   const [isRevealed, setIsRevealed] = useState(false);
+  const [selectedChar, setSelectedChar] = useState<Character | null>(null);
 
   useLayoutEffect(() => {
     let ctx = gsap.context(() => {
@@ -108,6 +152,105 @@ export function CharacterShowcase() {
 
     return () => ctx.revert();
   }, []);
+
+  // --- WEB AUDIO INTERFACE SYNTHESIZER ---
+  const playOpenBeep = () => {
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContextClass();
+      
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.setValueAtTime(800, ctx.currentTime);
+      filter.Q.setValueAtTime(4, ctx.currentTime);
+      filter.connect(ctx.destination);
+
+      const now = ctx.currentTime;
+      
+      // Fast high-pitch digital triple-beep
+      [1100, 1500, 2000].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+        
+        gainNode.gain.setValueAtTime(0.08, now + idx * 0.06);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.05);
+        
+        osc.connect(gainNode);
+        gainNode.connect(filter);
+        
+        osc.start(now + idx * 0.06);
+        osc.stop(now + idx * 0.06 + 0.05);
+      });
+
+      // Cyber static load sweep
+      const bufferSize = ctx.sampleRate * 0.2;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.03, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      
+      noise.connect(noiseGain);
+      noiseGain.connect(filter);
+      noise.start(now);
+      noise.stop(now + 0.2);
+    } catch (e) {
+      console.warn("AudioContext blocked or failed to initialize", e);
+    }
+  };
+
+  const playCloseBeep = () => {
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContextClass();
+      const now = ctx.currentTime;
+
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(600, now);
+      osc.frequency.exponentialRampToValueAtTime(80, now + 0.15);
+      
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(300, now);
+
+      gainNode.gain.setValueAtTime(0.12, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      
+      osc.connect(gainNode);
+      gainNode.connect(filter);
+      filter.connect(ctx.destination);
+      
+      osc.start(now);
+      osc.stop(now + 0.15);
+    } catch (e) {
+      console.warn("AudioContext blocked or failed to initialize", e);
+    }
+  };
+
+  const openModal = (char: Character) => {
+    playOpenBeep();
+    setSelectedChar(char);
+    document.body.style.overflow = 'hidden'; // Lock background scrolling
+  };
+
+  const closeModal = () => {
+    playCloseBeep();
+    setSelectedChar(null);
+    document.body.style.overflow = ''; // Unlock background scrolling
+  };
 
   const handleMouseEnter = (index: number) => {
     const card = cardsRef.current[index];
@@ -170,6 +313,45 @@ export function CharacterShowcase() {
         clipPath: 'polygon(0 5vw, 100% 0, 100% 100%, 0 100%)'
       }}
     >
+      {/* Glitch Keyframe CSS definitions */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes cyber-glitch-1 {
+          0% { clip-path: inset(40% 0 61% 0); transform: skew(0.3deg); }
+          20% { clip-path: inset(92% 0 1% 0); transform: skew(-0.5deg); }
+          40% { clip-path: inset(15% 0 80% 0); transform: skew(0.5deg); }
+          60% { clip-path: inset(80% 0 5% 0); transform: skew(-0.3deg); }
+          80% { clip-path: inset(3% 0 92% 0); transform: skew(0.8deg); }
+          100% { clip-path: inset(40% 0 61% 0); transform: skew(0deg); }
+        }
+        @keyframes cyber-glitch-2 {
+          0% { clip-path: inset(25% 0 58% 0); transform: skew(-0.8deg); }
+          20% { clip-path: inset(64% 0 28% 0); transform: skew(0.5deg); }
+          40% { clip-path: inset(5% 0 88% 0); transform: skew(-0.3deg); }
+          60% { clip-path: inset(80% 0 10% 0); transform: skew(0.8deg); }
+          80% { clip-path: inset(45% 0 35% 0); transform: skew(-0.5deg); }
+          100% { clip-path: inset(25% 0 58% 0); transform: skew(0deg); }
+        }
+        @keyframes white-noise-flicker {
+          0% { opacity: 0; }
+          10% { opacity: 0.15; }
+          20% { opacity: 0.05; }
+          30% { opacity: 0.25; }
+          40% { opacity: 0.02; }
+          50% { opacity: 0.18; }
+          60% { opacity: 0.08; }
+          70% { opacity: 0.3; }
+          80% { opacity: 0.05; }
+          90% { opacity: 0.12; }
+          100% { opacity: 0; }
+        }
+        @keyframes modal-boot-glitch {
+          0% { opacity: 0; transform: scale(0.95) skewX(-10deg); filter: hue-rotate(90deg) brightness(2); }
+          10% { opacity: 0.8; transform: scale(1.02) skewX(5deg); }
+          20% { opacity: 0.4; transform: scale(0.98) skewX(-5deg); filter: hue-rotate(-90deg) brightness(0.5); }
+          30% { opacity: 0.9; transform: scale(1) skewX(0deg); filter: none; }
+          100% { opacity: 1; transform: scale(1); }
+        }
+      `}} />
       
       {/* The Slash Element */}
       <div 
@@ -212,7 +394,8 @@ export function CharacterShowcase() {
                 ref={(el) => { cardsRef.current[index] = el; }}
                 onMouseEnter={() => handleMouseEnter(index)}
                 onMouseLeave={() => handleMouseLeave(index)}
-                className={`relative w-full max-w-sm lg:w-[340px] group transition-transform duration-500 ${lgScale} ${zIndex}`}
+                onClick={() => openModal(character)}
+                className={`relative w-full max-w-sm lg:w-[340px] group transition-transform duration-500 cursor-pointer ${lgScale} ${zIndex}`}
               >
                 {/* Red Ghost Layer */}
                 <div 
@@ -275,8 +458,14 @@ export function CharacterShowcase() {
                       {character.description}
                     </p>
                     
-                    <div className="text-white/40 italic text-xs border-l-2 border-[#FF0000] pl-3 py-1">
-                      {character.quote}
+                    {/* Blinking indicator on hover */}
+                    <div className="flex justify-between items-center mt-3 pt-3 border-t border-neutral-900">
+                      <div className="text-white/40 italic text-xs border-l-2 border-[#FF0000] pl-3 py-1">
+                        {character.quote}
+                      </div>
+                      <div className="text-[10px] text-[#FF0000] font-mono tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse">
+                        [ LINK SYNC ]
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -285,6 +474,150 @@ export function CharacterShowcase() {
           })}
         </div>
       </div>
+
+      {/* Immersive Cyber-Glitch HUD character profile modal */}
+      {selectedChar && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          {/* Glass backdrop with dark vignetting */}
+          <div 
+            onClick={closeModal}
+            className="absolute inset-0 bg-black/85 backdrop-blur-md cursor-pointer transition-opacity duration-300"
+          ></div>
+          
+          {/* White static glitch flash overlay */}
+          <div className="absolute inset-0 bg-white pointer-events-none z-50 mix-blend-difference" style={{ animation: 'white-noise-flicker 0.2s linear forwards' }}></div>
+
+          {/* Modal Chassis Card */}
+          <div 
+            className="relative w-full max-w-4xl bg-black border-2 border-[#FF0000] text-white shadow-[0_0_50px_rgba(255,0,0,0.5)] overflow-hidden z-10 animate-[modal-boot-glitch_0.35s_ease-out_forwards]"
+            style={{
+              clipPath: 'polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%)',
+              fontFamily: 'sans-serif'
+            }}
+          >
+            {/* Decrypting grid overlay */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.45)_50%)] bg-[length:100%_4px] opacity-35 pointer-events-none z-10"></div>
+            
+            {/* Bevel Corner Accents */}
+            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[#FF0000]"></div>
+            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[#FF0000]"></div>
+            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[#FF0000]"></div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[#FF0000]"></div>
+
+            {/* Main Grid Content */}
+            <div className="flex flex-col md:flex-row relative z-20">
+              
+              {/* Left Column: Glitch Art Image */}
+              <div className="w-full md:w-5/12 aspect-[3/4] md:aspect-auto md:h-[550px] relative bg-neutral-900 overflow-hidden border-b-2 md:border-b-0 md:border-r-2 border-[#FF0000]/40">
+                
+                {/* Glitch Aberration absolute clones */}
+                <img 
+                  src={selectedChar.imagePlaceholder} 
+                  alt={selectedChar.name} 
+                  className="absolute inset-0 w-full h-full object-cover opacity-90 scale-102"
+                  style={{ objectPosition: 'top center', filter: 'hue-rotate(60deg) saturate(1.5)', animation: 'cyber-glitch-1 4s linear infinite' }}
+                />
+                <img 
+                  src={selectedChar.imagePlaceholder} 
+                  alt={selectedChar.name} 
+                  className="absolute inset-0 w-full h-full object-cover opacity-90 scale-102"
+                  style={{ objectPosition: 'top center', filter: 'hue-rotate(-60deg) saturate(1.5)', animation: 'cyber-glitch-2 3.5s linear infinite' }}
+                />
+                <img 
+                  src={selectedChar.imagePlaceholder} 
+                  alt={selectedChar.name} 
+                  className="absolute inset-0 w-full h-full object-cover opacity-95"
+                  style={{ objectPosition: 'top center', filter: 'contrast(1.15) saturate(1.1)' }}
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 z-10"></div>
+                
+                {/* HUD Affiliation overlay */}
+                <div className="absolute bottom-6 left-6 z-20">
+                  <div className="text-[10px] font-mono text-[#FF0000] tracking-[0.2em] mb-1">COGNITIVE SYNC STATUS // ACTIVE</div>
+                  <h4 className="text-xl uppercase font-bold tracking-widest text-white">{selectedChar.name.split(' ')[0]}</h4>
+                </div>
+              </div>
+
+              {/* Right Column: Detailed Bio & Stats */}
+              <div className="w-full md:w-7/12 p-8 md:p-10 flex flex-col justify-between h-auto md:h-[550px] overflow-y-auto bg-black/95">
+                <div>
+                  
+                  {/* Header Title Glitch Block */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div>
+                      <div className="text-[#FF0000] text-xs font-mono font-bold tracking-[0.25em] uppercase mb-1.5">
+                        {selectedChar.faction}
+                      </div>
+                      <h3 
+                        className="text-4xl md:text-5xl uppercase tracking-tighter text-white font-bold leading-none" 
+                        style={{ fontFamily: 'Teko, sans-serif' }}
+                      >
+                        {selectedChar.name}
+                      </h3>
+                    </div>
+
+                    {/* Futuristic Close Button */}
+                    <button 
+                      onClick={closeModal}
+                      className="relative border border-neutral-800 hover:border-[#FF0000] hover:text-[#FF0000] px-3.5 py-1.5 font-mono text-xs tracking-wider uppercase bg-neutral-900 transition-colors flex items-center justify-center gap-1.5"
+                      style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%)' }}
+                    >
+                      <span>CLOSE</span>
+                      <span className="text-[#FF0000] font-bold">✖</span>
+                    </button>
+                  </div>
+
+                  {/* Character Meta Specifications Grid */}
+                  <div className="grid grid-cols-2 gap-4 mb-6 border-y border-neutral-800 py-4">
+                    <div>
+                      <span className="text-[10px] text-white/40 block font-mono uppercase tracking-widest mb-0.5">Signature Weapon</span>
+                      <span className="text-xs text-white uppercase tracking-wider font-semibold font-mono">{selectedChar.weapon}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-white/40 block font-mono uppercase tracking-widest mb-0.5">Combat Specialty</span>
+                      <span className="text-xs text-white uppercase tracking-wider font-semibold font-mono">{selectedChar.specialty}</span>
+                    </div>
+                  </div>
+
+                  {/* Deep Narrative Backstory (Lore) */}
+                  <div className="mb-6">
+                    <h5 className="text-xs text-white/40 font-mono uppercase tracking-widest mb-2">// DETAILED INTEGRATION RECORD</h5>
+                    <p className="text-white/80 text-sm leading-relaxed font-mono">
+                      {selectedChar.backstory}
+                    </p>
+                  </div>
+
+                </div>
+
+                {/* Tactical HUD Stat Bar Dashboard */}
+                <div>
+                  <h5 className="text-xs text-white/40 font-mono uppercase tracking-widest mb-3.5">// TACTICAL SYSTEMS SYNAPSE LOAD</h5>
+                  <div className="space-y-3.5">
+                    {Object.entries(selectedChar.fullStats).map(([statName, statVal]) => (
+                      <div key={statName}>
+                        <div className="flex justify-between items-center text-[10px] font-mono tracking-widest mb-1">
+                          <span className="text-white/50 uppercase">{statName}</span>
+                          <span className="text-[#FF0000] font-bold">{statVal}%</span>
+                        </div>
+                        <div className="w-full bg-neutral-900 h-1.5 border border-neutral-800 overflow-hidden relative">
+                          <div 
+                            className="bg-[#FF0000] h-full shadow-[0_0_8px_#FF0000] transition-all duration-700 ease-out"
+                            style={{ width: `${statVal}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      )}
     </section>
   );
 }
