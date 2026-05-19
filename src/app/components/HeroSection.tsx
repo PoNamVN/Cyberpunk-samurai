@@ -24,12 +24,20 @@ export function HeroSection() {
 
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   // --- Cyber-Slash Sound & Screen Shake Integration ---
   const playCyberSlashSound = () => {
     try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioContextClass();
+      if (!audioCtxRef.current) {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        audioCtxRef.current = new AudioContextClass();
+      }
+      
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
       
       // Heavy resonance lowpass filter
       const filter = ctx.createBiquadFilter();

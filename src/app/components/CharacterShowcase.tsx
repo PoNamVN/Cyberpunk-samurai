@@ -100,6 +100,7 @@ export function CharacterShowcase() {
   const slashRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const audioCtxRef = useRef<AudioContext | null>(null);
   
   const [isRevealed, setIsRevealed] = useState(false);
   const [selectedChar, setSelectedChar] = useState<Character | null>(null);
@@ -154,10 +155,21 @@ export function CharacterShowcase() {
   }, []);
 
   // --- WEB AUDIO INTERFACE SYNTHESIZER ---
+  const getAudioContext = (): AudioContext => {
+    if (!audioCtxRef.current) {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      audioCtxRef.current = new AudioContextClass();
+    }
+    const ctx = audioCtxRef.current;
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    return ctx;
+  };
+
   const playOpenBeep = () => {
     try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioContextClass();
+      const ctx = getAudioContext();
       
       const filter = ctx.createBiquadFilter();
       filter.type = 'highpass';
@@ -211,8 +223,7 @@ export function CharacterShowcase() {
 
   const playCloseBeep = () => {
     try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioContextClass();
+      const ctx = getAudioContext();
       const now = ctx.currentTime;
 
       const osc = ctx.createOscillator();
