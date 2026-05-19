@@ -200,27 +200,6 @@ export function CustomCursor() {
               opacity="0.95"
             />
 
-            {/* Sharp Laser Sparks Shooting Outward (Made thinner to match elegant style) */}
-            <line 
-              x1="100" y1="90" x2="55" y2="40" 
-              stroke="#FFFFFF" strokeWidth="1.2" strokeLinecap="round" pathLength="40"
-              style={{ animation: 'spark-shoot 0.22s cubic-bezier(0.1, 0.9, 0.2, 1) forwards' }}
-            />
-            <line 
-              x1="100" y1="90" x2="145" y2="45" 
-              stroke="#FFFFFF" strokeWidth="1.2" strokeLinecap="round" pathLength="40"
-              style={{ animation: 'spark-shoot 0.22s cubic-bezier(0.1, 0.9, 0.2, 1) forwards' }}
-            />
-            <line 
-              x1="100" y1="90" x2="55" y2="135" 
-              stroke="#FF0000" strokeWidth="1.2" strokeLinecap="round" pathLength="40"
-              style={{ animation: 'spark-shoot 0.22s cubic-bezier(0.1, 0.9, 0.2, 1) forwards' }}
-            />
-            <line 
-              x1="100" y1="90" x2="145" y2="135" 
-              stroke="#FF0000" strokeWidth="1.2" strokeLinecap="round" pathLength="40"
-              style={{ animation: 'spark-shoot 0.22s cubic-bezier(0.1, 0.9, 0.2, 1) forwards' }}
-            />
           </svg>
         </div>
       ))}
