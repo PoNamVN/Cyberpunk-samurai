@@ -103,11 +103,41 @@ export function Navbar({ onPlayClick }: { onPlayClick?: () => void }) {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/95 to-transparent backdrop-blur-sm select-none">
-      {/* Visualizer CSS style tag */}
+      {/* Visualizer and Glitch Button CSS style tag */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes bar-wave {
           0% { height: 2px; }
           100% { height: 10px; }
+        }
+        @keyframes play-glitch-1 {
+          0% { clip-path: inset(30% 0 65% 0); transform: translate(-3px, -2px); }
+          20% { clip-path: inset(88% 0 2% 0); transform: translate(2px, 3px); }
+          40% { clip-path: inset(10% 0 85% 0); transform: translate(-2px, -3px); }
+          60% { clip-path: inset(75% 0 8% 0); transform: translate(3px, 1px); }
+          80% { clip-path: inset(5% 0 90% 0); transform: translate(-3px, 2px); }
+          100% { clip-path: inset(30% 0 65% 0); transform: translate(-3px, -2px); }
+        }
+        @keyframes play-glitch-2 {
+          0% { clip-path: inset(20% 0 60% 0); transform: translate(3px, 2px); }
+          20% { clip-path: inset(65% 0 15% 0); transform: translate(-2px, -3px); }
+          40% { clip-path: inset(8% 0 80% 0); transform: translate(2px, 3px); }
+          60% { clip-path: inset(80% 0 4% 0); transform: translate(-3px, -2px); }
+          80% { clip-path: inset(15% 0 68% 0); transform: translate(3px, -2px); }
+          100% { clip-path: inset(20% 0 60% 0); transform: translate(3px, 2px); }
+        }
+        .nav-play-glitch-1 {
+          display: none;
+        }
+        .nav-play-btn:hover .nav-play-glitch-1 {
+          display: flex;
+          animation: play-glitch-1 0.2s infinite linear alternate-reverse;
+        }
+        .nav-play-glitch-2 {
+          display: none;
+        }
+        .nav-play-btn:hover .nav-play-glitch-2 {
+          display: flex;
+          animation: play-glitch-2 0.16s infinite linear alternate-reverse;
         }
       `}} />
 
@@ -188,28 +218,63 @@ export function Navbar({ onPlayClick }: { onPlayClick?: () => void }) {
             )}
           </button>
 
-          {/* Futuristic Cyberpunk Chamfered Stroke Button */}
+          {/* Cybernetic Play Now Button with High-Tech Laser Glitch & Blinking Beacon */}
           <button
             onClick={onPlayClick}
-            className="relative text-white hover:text-black bg-[#FF0000]/10 hover:bg-[#FF0000] transition-all duration-300 border-2 border-[#FF0000] px-10 py-3.5 uppercase tracking-[0.25em] font-bold shadow-[0_0_15px_rgba(255,0,0,0.3)] hover:shadow-[0_0_30px_rgba(255,0,0,0.85)] overflow-hidden group cursor-none"
+            className="relative text-white hover:text-black bg-black/60 hover:bg-[#FF0000] transition-all duration-300 border border-[#FF0000] px-9 py-3 uppercase tracking-[0.22em] font-bold shadow-[0_0_12px_rgba(255,0,0,0.25)] hover:shadow-[0_0_25px_rgba(255,0,0,0.85)] overflow-hidden group cursor-none nav-play-btn"
             style={{
               fontFamily: 'Oswald, sans-serif',
               fontWeight: 700,
               borderRadius: '0px',
-              clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))'
+              clipPath: 'polygon(12px 0px, 100% 0px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0px 100%, 0px 12px)'
             }}
           >
-            {/* Ambient cyber grid scanline inside the button */}
+            {/* Cyber Dot Matrix Background Pattern */}
+            <div className="absolute inset-0 bg-[radial-gradient(rgba(255,0,0,0.15)_1px,transparent_1px)] bg-[size:6px_6px] opacity-40 group-hover:opacity-0 transition-opacity"></div>
+            
+            {/* Ambient scanning grid line */}
             <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(255,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-30 group-hover:opacity-0 transition-opacity"></div>
             
             {/* Sliding laser reflection sheen */}
             <span className="absolute inset-0 block w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
 
-            <span className="relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">PLAY NOW</span>
+            {/* Text Content + Cyber Beacon Dot */}
+            <span className="relative z-10 flex items-center gap-2 group-hover:opacity-0 transition-opacity duration-200 justify-center">
+              <span className="w-2 h-2 rounded-full bg-[#FF0000] animate-pulse shadow-[0_0_6px_#FF0000]"></span>
+              PLAY NOW
+            </span>
+            <span className="absolute inset-0 flex items-center justify-center bg-white text-black font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 gap-2">
+              <span className="w-2 h-2 rounded-full bg-black animate-ping"></span>
+              PLAY NOW
+            </span>
 
-            {/* Micro tech corner indicator dots */}
-            <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-[#FF0000] rounded-none opacity-40 group-hover:bg-black transition-colors"></div>
-            <div className="absolute bottom-1 right-1 w-1.5 h-1.5 bg-[#FF0000] rounded-none opacity-40 group-hover:bg-black transition-colors"></div>
+            {/* Glitch Channel 1 (Cyan shadow) */}
+            <span className="absolute inset-0 bg-[#00FFFF] text-black px-9 py-3 uppercase tracking-[0.22em] font-bold border border-[#00FFFF] pointer-events-none nav-play-glitch-1 z-0 flex items-center justify-center"
+              style={{
+                fontFamily: 'Oswald, sans-serif',
+                fontWeight: 700,
+                borderRadius: '0px',
+                clipPath: 'polygon(12px 0px, 100% 0px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0px 100%, 0px 12px)',
+                top: '-2px',
+                left: '-2px'
+              }}
+            >
+              PLAY NOW
+            </span>
+
+            {/* Glitch Channel 2 (Magenta shadow) */}
+            <span className="absolute inset-0 bg-[#FF00FF] text-white px-9 py-3 uppercase tracking-[0.22em] font-bold border border-[#FF00FF] pointer-events-none nav-play-glitch-2 z-0 flex items-center justify-center"
+              style={{
+                fontFamily: 'Oswald, sans-serif',
+                fontWeight: 700,
+                borderRadius: '0px',
+                clipPath: 'polygon(12px 0px, 100% 0px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0px 100%, 0px 12px)',
+                top: '2px',
+                left: '2px'
+              }}
+            >
+              PLAY NOW
+            </span>
           </button>
         </div>
       </div>
