@@ -180,10 +180,11 @@ export function FallingKanjisAmbient({
     let animId: number;
 
     const handleResize = () => {
-      const rect = canvas.getBoundingClientRect();
+      const w = window.innerWidth;
+      const h = window.innerHeight;
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
       ctx.restore(); // reset to clear standard scales
       ctx.save();
       ctx.scale(dpr, dpr);
@@ -383,8 +384,7 @@ export function FallingKanjisAmbient({
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed inset-0 pointer-events-none z-30 select-none overflow-hidden"
-      style={{ mixBlendMode: 'screen' }}
+      className="fixed inset-0 pointer-events-none z-[9995] select-none overflow-hidden w-full h-full"
     />
   );
 }
