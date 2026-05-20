@@ -113,10 +113,9 @@ export function FallingKanjisAmbient({
     const size = 18 + Math.random() * 44; // 18px to 62px
     const { depth, speed, opacity, glowBlur } = getDepthInfo(size);
 
-    const colors = ['#ffffff', '#ffffff', '#ff3b30', '#00ffff', '#ff00ff'];
-    const pColor = colors[Math.floor(Math.random() * colors.length)];
-    const glowColors = ['#ff0000', '#ff0000', '#ff3b30', '#00ffff', '#ff00ff'];
-    const pGlow = glowColors[Math.floor(Math.random() * glowColors.length)];
+    const isRed = Math.random() > 0.4; // 40% red, 60% white
+    const pColor = isRed ? '#ff3b30' : '#ffffff';
+    const pGlow = isRed ? '#ff0000' : (Math.random() > 0.5 ? '#ff3b30' : '#ffffff');
 
     const newParticle: KanjiParticle = {
       id: nextId.current++,
@@ -304,62 +303,54 @@ export function FallingKanjisAmbient({
           ctx.translate(p.x, p.y);
           ctx.rotate(p.angle);
 
-          // RGB Glitch flickering effect (subtle)
+          // RGB Glitch flickering effect (subtle, red only to preserve red/white color palette)
           if (Math.random() > 0.96) {
-            ctx.shadowColor = '#00ffff';
+            ctx.shadowColor = '#ff0000';
             ctx.shadowBlur = p.glowBlur * 1.5;
             ctx.translate(Math.random() * 4 - 2, 0);
           }
 
           ctx.fillText(p.char, 0, 0);
         } else {
-          // DRAW SLICED FRAGMENTS DRIFTING APART
+          // DRAW SLICED FRAGMENTS DRIFTING APART (GENUINE CUT MASK, NO DUPLICATION)
           const driftOffset = p.sliceTime * p.driftSpeed;
           
-          // --- LEFT HALF SHARD ---
+          // --- LEFT/TOP HALF SHARD ---
           ctx.save();
           ctx.translate(p.x, p.y);
-          ctx.rotate(p.angle);
+          ctx.rotate(p.splitAngle);
           
-          // Translate away from slash vector perpendicularly
-          const driftX1 = -Math.sin(p.splitAngle) * driftOffset;
-          const driftY1 = Math.cos(p.splitAngle) * driftOffset;
-          ctx.translate(driftX1, driftY1);
-          ctx.rotate(-p.sliceTime * 0.03); // spin left shard counter-clockwise
+          // Translate perpendicular to the cut line
+          ctx.translate(0, -driftOffset);
+          ctx.rotate(-p.sliceTime * 0.02); // spin slightly
           
-          // Cut right side of text relative to slash line
-          ctx.save();
-          ctx.rotate(p.splitAngle - Math.PI / 2); // align cut axis
+          // Clip to show only the top half (relative to cut angle)
           ctx.beginPath();
-          ctx.rect(-p.size * 2.5, -p.size * 2.5, p.size * 2.5, p.size * 5.0);
+          ctx.rect(-p.size * 2, -p.size * 2, p.size * 4, p.size * 2);
           ctx.clip();
-          ctx.restore();
           
-          // Render Left Halve
+          // Rotate back to draw text in its original orientation
+          ctx.rotate(p.angle - p.splitAngle + p.sliceTime * 0.02);
           ctx.fillText(p.char, 0, 0);
           ctx.restore();
 
 
-          // --- RIGHT HALF SHARD ---
+          // --- RIGHT/BOTTOM HALF SHARD ---
           ctx.save();
           ctx.translate(p.x, p.y);
-          ctx.rotate(p.angle);
+          ctx.rotate(p.splitAngle);
           
-          // Translate in opposite direction
-          const driftX2 = Math.sin(p.splitAngle) * driftOffset;
-          const driftY2 = -Math.cos(p.splitAngle) * driftOffset;
-          ctx.translate(driftX2, driftY2);
-          ctx.rotate(p.sliceTime * 0.03); // spin right shard clockwise
+          // Translate in the opposite perpendicular direction
+          ctx.translate(0, driftOffset);
+          ctx.rotate(p.sliceTime * 0.02); // spin slightly
           
-          // Cut left side of text
-          ctx.save();
-          ctx.rotate(p.splitAngle - Math.PI / 2); // align cut axis
+          // Clip to show only the bottom half (relative to cut angle)
           ctx.beginPath();
-          ctx.rect(0, -p.size * 2.5, p.size * 2.5, p.size * 5.0);
+          ctx.rect(-p.size * 2, 0, p.size * 4, p.size * 2);
           ctx.clip();
-          ctx.restore();
           
-          // Render Right Halve
+          // Rotate back to draw text in its original orientation
+          ctx.rotate(p.angle - p.splitAngle - p.sliceTime * 0.02);
           ctx.fillText(p.char, 0, 0);
           ctx.restore();
         }
