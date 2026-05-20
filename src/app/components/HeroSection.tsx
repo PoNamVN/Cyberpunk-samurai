@@ -485,18 +485,18 @@ export function HeroSection() {
       {/* Initial Japanese Typography - Fades out on scroll with elegant scramble effect */}
       <div
         ref={scrollIndicatorRef}
-        className="absolute left-8 lg:left-[calc((100vw-1440px)/2+32px)] top-[14%] md:top-[12%] z-0 pointer-events-none flex flex-col items-start"
+        className="absolute right-12 lg:right-24 top-[18%] md:top-[16%] z-0 pointer-events-none flex flex-col items-end opacity-35"
         style={{ opacity: kanjiOpacity }}
       >
         {/* Kanji Body with Softer, Premium Ambient Red Neon Glow */}
         <span
-          className="text-[#E53935] font-bold leading-none select-none tracking-[0.15em] drop-shadow-[0_0_15px_rgba(255,0,0,0.35)]"
+          className="text-[#E53935] font-bold leading-none select-none tracking-[0.15em]"
           style={{
             writingMode: 'vertical-rl',
             textOrientation: 'upright',
             fontFamily: '"Yu Mincho", "MS Mincho", "Hiragino Mincho Pro", "Noto Serif JP", serif',
-            fontSize: 'clamp(8rem, 14vw, 15.5rem)',
-            textShadow: '0px 0px 8px rgba(229,57,53,0.65), 0px 0px 25px rgba(229,57,53,0.3)',
+            fontSize: 'clamp(7rem, 12vw, 13.5rem)',
+            textShadow: '0px 0px 8px rgba(229,57,53,0.45), 0px 0px 25px rgba(229,57,53,0.2)',
           }}
         >
           {kanjiText}
@@ -504,24 +504,34 @@ export function HeroSection() {
       </div>
 
       {/* Hero Content */}
-      <div ref={contentRef} className="relative z-10 w-2/3 pl-20 md:pl-32">
-        <div ref={titleRef} className="relative mb-12">
+      <div ref={contentRef} className="relative z-10 w-full max-w-4xl pl-8 md:pl-20 lg:pl-32">
+        <div ref={titleRef} className="relative mb-10 md:mb-12 border-l-2 border-[#FF0000] pl-6 md:pl-8">
+          {/* Tech HUD Subtitle Tag */}
+          <div className="flex items-center gap-3 mb-4 font-mono text-[10px] md:text-xs tracking-[0.3em] text-[#FF0000] uppercase select-none">
+            <span className="inline-block w-1.5 h-1.5 bg-[#FF0000] shadow-[0_0_8px_#FF0000] rounded-sm animate-pulse"></span>
+            <span>SYSTEM_PROTOCOL: SHINOBI_ACTIVE</span>
+            <span className="text-white/30 hidden sm:inline">// EST.2026</span>
+          </div>
+
           <h1
-            className="text-7xl md:text-8xl lg:text-9xl uppercase tracking-tighter leading-[0.85] relative text-white"
+            className="text-6xl md:text-7xl lg:text-[7.5rem] uppercase tracking-tighter leading-none relative text-white flex flex-col items-start gap-1"
             style={{ fontFamily: 'Teko, sans-serif', fontWeight: 700 }}
           >
-            <div className="absolute -top-4 -left-4 w-24 h-0.5 bg-[#FF0000] shadow-lg shadow-red-600/50"></div>
-            <div className="absolute top-20 right-8 w-32 h-0.5 bg-[#FF0000] shadow-lg shadow-red-600/50"></div>
-            <div className="absolute top-40 -left-6 w-28 h-0.5 bg-[#FF0000] shadow-lg shadow-red-600/50"></div>
-            <div className="absolute bottom-16 left-16 w-36 h-0.5 bg-[#FF0000] shadow-lg shadow-red-600/50"></div>
-            <div className="absolute -bottom-4 right-4 w-20 h-0.5 bg-[#FF0000] shadow-lg shadow-red-600/50"></div>
-
-            <span className="absolute top-0 left-0 text-[#FF0000] opacity-10 -z-10" style={{ transform: 'translate(3px, 3px)' }}>
-              <ScrambleText text={"HONOR\nMEETS\nCHAOS"} isRevealed={isRevealed} />
+            {/* Line 1: HONOR (Pure White, sleek tracking) */}
+            <span className="text-white tracking-wider leading-none drop-shadow-[0_0_12px_rgba(255,255,255,0.08)]">
+              <ScrambleText text="HONOR" isRevealed={isRevealed} />
             </span>
 
-            <span className="relative z-10 drop-shadow-[0_0_25px_rgba(255,0,0,0.4)]">
-              <ScrambleText text={"HONOR\nMEETS\nCHAOS"} isRevealed={isRevealed} />
+            {/* Line 2: MEETS (Tech-subtext style with lines) */}
+            <div className="text-[11px] md:text-[13px] font-mono tracking-[0.6em] text-white/40 my-2 md:my-3 flex items-center gap-3 select-none">
+              <span className="h-[1px] w-8 md:w-16 bg-[#FF0000]/40"></span>
+              <span>MEETS</span>
+              <span className="h-[1px] w-8 md:w-16 bg-[#FF0000]/40"></span>
+            </div>
+
+            {/* Line 3: CHAOS (Vibrant red neon cyberpunk glow) */}
+            <span className="text-[#FF0000] tracking-tighter leading-none font-extrabold drop-shadow-[0_0_35px_rgba(255,0,0,0.85)]">
+              <ScrambleText text="CHAOS" isRevealed={isRevealed} />
             </span>
           </h1>
         </div>
