@@ -91,8 +91,8 @@ export function HeroSection() {
   };
 
   const triggerSlash = () => {
-    // 1. Play Dynamic Cyber katana slash Whoosh Sound
-    playCyberSlashSound();
+    // 1. Play Dynamic Cyber katana slash Whoosh Sound (Disabled per user request)
+    // playCyberSlashSound();
 
     // 2. Camera Shake (Simulate physical impact on HUD & Title content)
     if (contentRef.current) {
