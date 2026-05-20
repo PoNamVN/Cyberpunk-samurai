@@ -507,77 +507,49 @@ export function HeroSection() {
       <div ref={contentRef} className="relative z-10 w-full max-w-6xl mx-auto px-4 flex flex-col items-center justify-center text-center">
         <div 
           ref={titleRef} 
-          className="relative mb-12 flex flex-col items-center justify-center text-center w-full max-w-5xl px-6 py-12 sm:px-12 sm:py-16 border border-[#FF0000]/25 bg-black/45 backdrop-blur-[3px] rounded-lg shadow-[0_0_40px_rgba(255,0,0,0.12)] overflow-hidden select-none group/frame"
+          className="relative mb-10 md:mb-14 flex flex-col items-center justify-center text-center w-full select-none py-4 px-2"
         >
-          {/* Cyber grid pattern overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,0,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,0,0,0.015)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none z-0"></div>
-
-          {/* Holographic scanning laser line */}
-          <div className="absolute left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#FF0000]/40 to-transparent shadow-[0_0_8px_#FF0000] pointer-events-none z-0 animate-[scan_5s_infinite_ease-in-out]"></div>
-
-          {/* Corner Brackets */}
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#FF0000] shadow-[0_0_6px_rgba(255,0,0,0.5)] z-10 transition-all duration-300 group-hover/frame:w-10 group-hover/frame:h-10"></div>
-          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[#FF0000] shadow-[0_0_6px_rgba(255,0,0,0.5)] z-10 transition-all duration-300 group-hover/frame:w-10 group-hover/frame:h-10"></div>
-          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[#FF0000] shadow-[0_0_6px_rgba(255,0,0,0.5)] z-10 transition-all duration-300 group-hover/frame:w-10 group-hover/frame:h-10"></div>
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#FF0000] shadow-[0_0_6px_rgba(255,0,0,0.5)] z-10 transition-all duration-300 group-hover/frame:w-10 group-hover/frame:h-10"></div>
-
-          {/* Tactical Telemetry Text Indicators */}
-          <div className="absolute top-2 left-4 font-mono text-[8px] text-[#FF0000]/50 tracking-[0.2em] pointer-events-none hidden sm:block">
-            SYS_LOCK: 0x90-SHINOBI
-          </div>
-          <div className="absolute top-2 right-4 font-mono text-[8px] text-[#FF0000]/50 tracking-[0.2em] pointer-events-none hidden sm:block">
-            FR_RATE: 120fps // SECURE
-          </div>
-          <div className="absolute bottom-2 left-4 font-mono text-[8px] text-[#FF0000]/50 tracking-[0.2em] pointer-events-none hidden sm:block">
-            TACTICAL_COORD: 35.0116_N
-          </div>
-          <div className="absolute bottom-2 right-4 font-mono text-[8px] text-[#FF0000]/50 tracking-[0.2em] pointer-events-none hidden sm:block">
-            THREAT: OMEGA_LEVEL
-          </div>
-
-          {/* Outer Border Side Ticks */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-8 bg-gradient-to-b from-[#FF0000]/20 via-[#FF0000] to-[#FF0000]/20"></div>
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[2px] h-8 bg-gradient-to-b from-[#FF0000]/20 via-[#FF0000] to-[#FF0000]/20"></div>
-
-          {/* Tech HUD Subtitle Tag */}
-          <div className="relative z-10 flex items-center gap-3 mb-6 font-mono text-[10px] md:text-xs tracking-[0.4em] text-[#FF0000] uppercase select-none justify-center">
-            <span className="inline-block w-1.5 h-1.5 bg-[#FF0000] shadow-[0_0_8px_#FF0000] rounded-sm animate-pulse"></span>
-            <span>SYSTEM_PROTOCOL: SHINOBI_ACTIVE</span>
+          {/* Minimalist Premium Accent Tag */}
+          <div className="relative z-10 flex items-center gap-3 mb-6 font-mono text-[9px] md:text-[10px] tracking-[0.45em] text-[#FF3B30] uppercase select-none justify-center">
+            <span className="inline-block w-1.5 h-1.5 bg-[#FF3B30] shadow-[0_0_8px_#FF3B30] rounded-sm animate-pulse"></span>
+            <span>SYSTEM PROTOCOL: SHINOBI_ACTIVE</span>
             <span className="text-white/30 hidden sm:inline">// EST.2026</span>
           </div>
 
           <h1
-            className="relative z-10 text-4xl sm:text-6xl md:text-7xl lg:text-[7rem] xl:text-[8rem] uppercase tracking-wider leading-none flex flex-col lg:flex-row items-center justify-center whitespace-normal lg:whitespace-nowrap gap-x-4 lg:gap-x-6 gap-y-4 lg:gap-y-0 text-center select-none w-full"
-            style={{ fontFamily: '"Space Grotesk", "Orbitron", sans-serif', fontWeight: 900 }}
+            className="relative z-10 text-5xl sm:text-6xl md:text-7xl lg:text-[7.5rem] xl:text-[8.5rem] uppercase tracking-wider leading-none flex flex-col lg:flex-row items-center justify-center whitespace-normal lg:whitespace-nowrap gap-x-4 lg:gap-x-8 gap-y-4 lg:gap-y-0 text-center select-none w-full"
+            style={{ fontWeight: 900 }}
           >
-            {/* HONOR (Futuristic Split Metal Silver Gradient) */}
+            {/* HONOR (Solid White with Multi-layered Platinum Silver Glow) */}
             <span 
-              className="inline-block tracking-widest font-black uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-neutral-400 drop-shadow-[0_0_15px_rgba(255,255,255,0.45)] transition-all duration-300"
-              style={{ fontWeight: 900, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+              className="inline-block tracking-widest font-black uppercase text-white transition-all duration-300 hover:scale-[1.02]"
+              style={{ 
+                fontFamily: '"Space Grotesk", sans-serif',
+                fontWeight: 900,
+                textShadow: '0 0 10px rgba(255,255,255,0.75), 0 0 25px rgba(255,255,255,0.4), 0 0 45px rgba(255,255,255,0.15)'
+              }}
             >
               <ScrambleText text="HONOR" isRevealed={isRevealed} />
             </span>
 
             {/* MEETS (Highly styled microchip connector badge) */}
-            <span className="inline-block relative z-10 font-mono text-[10px] md:text-xs tracking-[0.35em] text-[#FF3B30] bg-[#FF3B30]/10 border border-[#FF3B30]/35 px-4 py-2 rounded-sm backdrop-blur-md uppercase select-none lg:translate-y-1 mx-2 flex items-center gap-1.5 shadow-[0_0_15px_rgba(255,59,48,0.15)] animate-pulse">
+            <span className="inline-block relative z-10 font-mono text-[9px] md:text-[11px] tracking-[0.3em] text-[#FF3B30] bg-[#FF3B30]/8 border border-[#FF3B30]/30 px-3 py-1.5 rounded-sm backdrop-blur-md uppercase select-none lg:translate-y-1 mx-2 flex items-center gap-1.5 shadow-[0_0_12px_rgba(255,59,48,0.12)] animate-[pulse_2s_infinite]">
               <span className="inline-block w-1.5 h-1.5 bg-[#FF3B30] rounded-full animate-ping"></span>
               [ <span className="text-white font-bold">MEETS</span> ]
             </span>
 
-            {/* CHAOS (Premium Dual-Glow Shifting Crimson-Red-Orange Gradient) */}
+            {/* CHAOS (Solid Crimson Red with Premium Multi-layered High-Intensity Crimson Glow) */}
             <span 
-              className="inline-block tracking-wide font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FF0055] via-[#FF3B30] to-[#FF9500] drop-shadow-[0_0_35px_rgba(255,0,85,0.8)]"
-              style={{ fontFamily: '"Syncopate", "Orbitron", sans-serif', fontWeight: 900, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+              className="inline-block tracking-wide font-extrabold text-[#FF3B30] transition-all duration-300 hover:scale-[1.02]"
+              style={{ 
+                fontFamily: '"Syncopate", sans-serif',
+                fontWeight: 900,
+                textShadow: '0 0 10px #FF3B30, 0 0 25px rgba(255,59,48,0.85), 0 0 50px rgba(255,59,48,0.45), 0 0 75px rgba(255,59,48,0.2)'
+              }}
             >
               <ScrambleText text="CHAOS" isRevealed={isRevealed} />
             </span>
           </h1>
-
-          {/* Premium HUD Tech Horizontal Center Divider */}
-          <div className="relative z-10 w-64 h-[1px] bg-gradient-to-r from-transparent via-[#FF0000]/60 to-transparent relative mx-auto mt-8 select-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-[#FF0000] shadow-[0_0_10px_#FF0000] rounded-full animate-ping"></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-[#FF0000] rounded-full"></div>
-          </div>
         </div>
 
         <button
