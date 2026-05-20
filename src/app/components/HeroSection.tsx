@@ -504,7 +504,7 @@ export function HeroSection() {
       </div>
 
       {/* Hero Content */}
-      <div ref={contentRef} className="relative z-10 w-full max-w-5xl pl-8 md:pl-20 lg:pl-32">
+      <div ref={contentRef} className="relative z-10 w-full max-w-7xl pl-8 md:pl-20 lg:pl-32">
         <div ref={titleRef} className="relative mb-10 md:mb-12 border-l-2 border-[#FF0000] pl-6 md:pl-8">
           {/* Tech HUD Subtitle Tag */}
           <div className="flex items-center gap-3 mb-4 font-mono text-[10px] md:text-xs tracking-[0.3em] text-[#FF0000] uppercase select-none">
@@ -514,7 +514,7 @@ export function HeroSection() {
           </div>
 
           <h1
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-[7rem] uppercase tracking-tighter leading-none relative text-white flex flex-col md:flex-row items-start md:items-center flex-wrap gap-x-4 lg:gap-x-6 gap-y-2 md:gap-y-0"
+            className="text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem] xl:text-[10rem] uppercase tracking-tighter leading-none relative text-white flex flex-col md:flex-row items-start md:items-center whitespace-normal md:whitespace-nowrap gap-x-4 lg:gap-x-8 gap-y-2 md:gap-y-0"
             style={{ fontFamily: 'Teko, sans-serif', fontWeight: 700 }}
           >
             {/* HONOR (Pure White, sleek tracking) */}
@@ -523,7 +523,7 @@ export function HeroSection() {
             </span>
 
             {/* MEETS (Tech-subtext style with slashes) */}
-            <span className="text-2xl md:text-3xl lg:text-4xl font-mono tracking-widest text-[#FF0000]/60 select-none md:-translate-y-1">
+            <span className="text-xl md:text-3xl lg:text-4xl xl:text-5xl font-mono tracking-widest text-[#FF0000]/60 select-none md:-translate-y-2">
               // MEETS //
             </span>
 
