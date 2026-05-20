@@ -6,6 +6,7 @@ import { LoreSection } from './components/LoreSection';
 import { CharacterShowcase } from './components/CharacterShowcase';
 import { FallingKanjisAmbient } from './components/FallingKanjisAmbient';
 import { Footer } from './components/Footer';
+import { SlashEffect } from './components/ui/SlashEffect';
 
 export default function App() {
   const [burstTrigger, setBurstTrigger] = useState(0);
@@ -43,6 +44,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Global Katana Click Slash Effect */}
+      <SlashEffect />
+
       {/* 1. Parallax Glowing Cyber Grid Background */}
       <div
         ref={gridRef}
