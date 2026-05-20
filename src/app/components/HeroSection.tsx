@@ -509,42 +509,61 @@ export function HeroSection() {
           ref={titleRef} 
           className="relative mb-10 md:mb-14 flex flex-col items-center justify-center text-center w-full select-none py-4 px-2"
         >
-          {/* Minimalist Premium Accent Tag */}
-          <div className="relative z-10 flex items-center gap-3 mb-6 font-mono text-[9px] md:text-[10px] tracking-[0.45em] text-[#FF3B30] uppercase select-none justify-center">
-            <span className="inline-block w-1.5 h-1.5 bg-[#FF3B30] shadow-[0_0_8px_#FF3B30] rounded-sm animate-pulse"></span>
-            <span>SYSTEM PROTOCOL: SHINOBI_ACTIVE</span>
-            <span className="text-white/30 hidden sm:inline">// EST.2026</span>
+          {/* Subtitle Tag với Đường Chân Tóc Công Nghệ */}
+          <div className="relative z-10 flex items-center gap-4 mb-8 font-mono text-[9px] md:text-[10px] tracking-[0.45em] uppercase select-none justify-center w-full max-w-lg mx-auto">
+            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/20"></div>
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-1.5 h-1.5 bg-[#FF3B30] shadow-[0_0_8px_#FF3B30] rounded-sm animate-pulse"></span>
+              <span className="text-white/80 font-bold tracking-[0.3em]">SYSTEM PROTOCOL</span>
+              <span className="text-[#FF3B30] font-black">// ACTIVE</span>
+            </div>
+            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/20"></div>
           </div>
 
           <h1
             className="relative z-10 text-5xl sm:text-6xl md:text-7xl lg:text-[7.5rem] xl:text-[8.5rem] uppercase tracking-wider leading-none flex flex-col lg:flex-row items-center justify-center whitespace-normal lg:whitespace-nowrap gap-x-4 lg:gap-x-8 gap-y-4 lg:gap-y-0 text-center select-none w-full"
             style={{ fontWeight: 900 }}
           >
-            {/* HONOR (Solid White with Multi-layered Platinum Silver Glow) */}
+            {/* HONOR (Metallic Silver Chrome with Platinum Aura) */}
             <span 
-              className="inline-block tracking-widest font-black uppercase text-white transition-all duration-300 hover:scale-[1.02]"
+              className="inline-block tracking-[0.12em] font-black uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-400 select-none transition-all duration-300 hover:scale-[1.03]"
               style={{ 
-                fontFamily: '"Space Grotesk", sans-serif',
+                fontFamily: '"Orbitron", sans-serif',
                 fontWeight: 900,
-                textShadow: '0 0 10px rgba(255,255,255,0.75), 0 0 25px rgba(255,255,255,0.4), 0 0 45px rgba(255,255,255,0.15)'
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.45)) drop-shadow(0 0 25px rgba(255,255,255,0.15))',
+                paddingBottom: '0.05em',
+                paddingRight: '0.05em'
               }}
             >
               <ScrambleText text="HONOR" isRevealed={isRevealed} />
             </span>
 
-            {/* MEETS (Highly styled microchip connector badge) */}
-            <span className="inline-block relative z-10 font-mono text-[9px] md:text-[11px] tracking-[0.3em] text-[#FF3B30] bg-[#FF3B30]/8 border border-[#FF3B30]/30 px-3 py-1.5 rounded-sm backdrop-blur-md uppercase select-none lg:translate-y-1 mx-2 flex items-center gap-1.5 shadow-[0_0_12px_rgba(255,59,48,0.12)] animate-[pulse_2s_infinite]">
-              <span className="inline-block w-1.5 h-1.5 bg-[#FF3B30] rounded-full animate-ping"></span>
-              [ <span className="text-white font-bold">MEETS</span> ]
+            {/* MEETS (Cyberpunk Glowing Capsule Badge) */}
+            <span className="inline-flex items-center gap-2.5 font-mono text-[9px] md:text-[10px] tracking-[0.25em] text-white bg-black/60 border border-white/10 px-4 py-2 rounded-full backdrop-blur-md select-none my-4 lg:my-0 mx-4 shadow-[0_0_15px_rgba(255,255,255,0.05)] border-t-white/20">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF3B30] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF3B30] shadow-[0_0_8px_#FF3B30]"></span>
+              </span>
+              <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-white/80">MEETS</span>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF3B30] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF3B30] shadow-[0_0_8px_#FF3B30]"></span>
+              </span>
             </span>
 
-            {/* CHAOS (Solid Crimson Red with Premium Multi-layered High-Intensity Crimson Glow) */}
+            {/* CHAOS (Ignition Crimson Gradient with Heat Glow) */}
             <span 
-              className="inline-block tracking-wide font-extrabold text-[#FF3B30] transition-all duration-300 hover:scale-[1.02]"
+              className="inline-block tracking-[0.08em] font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-[#FF0055] via-[#FF3B30] to-[#FFA500] select-none transition-all duration-300 hover:scale-[1.03]"
               style={{ 
-                fontFamily: '"Syncopate", sans-serif',
+                fontFamily: '"Orbitron", sans-serif',
                 fontWeight: 900,
-                textShadow: '0 0 10px #FF3B30, 0 0 25px rgba(255,59,48,0.85), 0 0 50px rgba(255,59,48,0.45), 0 0 75px rgba(255,59,48,0.2)'
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                filter: 'drop-shadow(0 0 12px rgba(255,59,48,0.65)) drop-shadow(0 0 35px rgba(255,0,85,0.3))',
+                paddingBottom: '0.05em',
+                paddingRight: '0.05em'
               }}
             >
               <ScrambleText text="CHAOS" isRevealed={isRevealed} />
