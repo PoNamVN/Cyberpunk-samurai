@@ -35,7 +35,7 @@ export function Footer() {
                 key={social}
                 href="#"
                 onClick={(e) => e.preventDefault()}
-                className="relative text-neutral-400 text-xs tracking-widest font-mono hover:text-[#FF0000] hover:drop-shadow-[0_0_8px_#FF0000] transition-all py-1 px-3 border border-transparent hover:border-[#FF0000]/40 cursor-none"
+                className="relative text-neutral-400 text-xs tracking-widest font-mono hover:text-[#FF0000] hover:drop-shadow-[0_0_8px_#FF0000] transition-all py-1 px-3 border border-transparent hover:border-[#FF0000]/40 cursor-pointer"
                 style={{
                   clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))'
                 }}
@@ -46,7 +46,7 @@ export function Footer() {
           </div>
           <button 
             onClick={handleScrollToTop}
-            className="text-neutral-500 hover:text-white font-mono text-[10px] tracking-[0.2em] transition-colors border-b border-transparent hover:border-white pb-0.5 uppercase cursor-none"
+            className="text-neutral-500 hover:text-white font-mono text-[10px] tracking-[0.2em] transition-colors border-b border-transparent hover:border-white pb-0.5 uppercase cursor-pointer"
           >
             ▲ BACK TO TOP
           </button>

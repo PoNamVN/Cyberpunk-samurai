@@ -375,7 +375,7 @@ export function HeroSection() {
     <section
       ref={containerRef}
       onMouseDown={handleSectionMouseDown}
-      className="relative h-screen w-full flex items-center overflow-hidden bg-black cursor-none select-none"
+      className="relative h-screen w-full flex items-center overflow-hidden bg-black select-none"
     >
       {/* Decrypting Cyber Loader - Glowing Neon Cyberpunk UI */}
       {!isPreloaded && (
@@ -573,7 +573,7 @@ export function HeroSection() {
 
         <button
           ref={buttonRef}
-          className="relative bg-[#FF0000] text-white px-24 py-7 text-2xl uppercase tracking-widest border-2 border-[#FF0000] shadow-2xl shadow-red-900/60 overflow-hidden group cursor-none transition-colors duration-300"
+          className="relative bg-[#FF0000] text-white px-24 py-7 text-2xl uppercase tracking-widest border-2 border-[#FF0000] shadow-2xl shadow-red-900/60 overflow-hidden group cursor-pointer transition-colors duration-300"
           style={{
             fontFamily: 'Oswald, sans-serif',
             fontWeight: 700,

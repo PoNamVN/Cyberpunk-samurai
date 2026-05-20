@@ -210,7 +210,7 @@ export function Navbar({ onPlayClick }: NavbarProps) {
         <div className="hidden md:flex items-center gap-10 font-mono text-base tracking-[0.28em] relative">
           <button
             onClick={() => handleScrollTo('#hero')}
-            className="text-white/80 hover:text-white hover:drop-shadow-[0_0_12px_#FF0000] transition-all duration-300 cursor-none uppercase relative group"
+            className="text-white/80 hover:text-white hover:drop-shadow-[0_0_12px_#FF0000] transition-all duration-300 cursor-pointer uppercase relative group"
             style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}
           >
             HOME
@@ -218,7 +218,7 @@ export function Navbar({ onPlayClick }: NavbarProps) {
           </button>
           <button
             onClick={() => handleScrollTo('#lore')}
-            className="text-white/80 hover:text-white hover:drop-shadow-[0_0_12px_#FF0000] transition-all duration-300 cursor-none uppercase relative group"
+            className="text-white/80 hover:text-white hover:drop-shadow-[0_0_12px_#FF0000] transition-all duration-300 cursor-pointer uppercase relative group"
             style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}
           >
             LORE
@@ -226,7 +226,7 @@ export function Navbar({ onPlayClick }: NavbarProps) {
           </button>
           <button
             onClick={() => handleScrollTo('#showcase')}
-            className="text-white/80 hover:text-white hover:drop-shadow-[0_0_12px_#FF0000] transition-all duration-300 cursor-none uppercase relative group"
+            className="text-white/80 hover:text-white hover:drop-shadow-[0_0_12px_#FF0000] transition-all duration-300 cursor-pointer uppercase relative group"
             style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}
           >
             WARRIORS
@@ -282,7 +282,7 @@ export function Navbar({ onPlayClick }: NavbarProps) {
               onClick={onPlayClick}
               onMouseEnter={handlePlayMouseEnter}
               onMouseLeave={handlePlayMouseLeave}
-              className="relative text-white hover:text-black bg-black/75 hover:bg-[#FF0000] transition-all duration-300 border border-[#FF0000] px-10 py-3 uppercase tracking-[0.22em] font-bold overflow-hidden group cursor-none nav-play-btn"
+              className="relative text-white hover:text-black bg-black/75 hover:bg-[#FF0000] transition-all duration-300 border border-[#FF0000] px-10 py-3 uppercase tracking-[0.22em] font-bold overflow-hidden group cursor-pointer nav-play-btn"
               style={{
                 fontFamily: 'Oswald, sans-serif',
                 fontWeight: 700,

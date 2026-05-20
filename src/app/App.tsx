@@ -4,7 +4,6 @@ import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { LoreSection } from './components/LoreSection';
 import { CharacterShowcase } from './components/CharacterShowcase';
-import { CustomCursor } from './components/ui/CustomCursor';
 import { FallingKanjisAmbient } from './components/FallingKanjisAmbient';
 import { Footer } from './components/Footer';
 
@@ -77,8 +76,6 @@ export default function App() {
       {/* Ambient Interactive Falling Kanjis */}
       <FallingKanjisAmbient burstTrigger={burstTrigger} />
 
-      {/* Custom Gaming Cursor */}
-      <CustomCursor />
 
       {/* Content */}
       <div className="relative z-10">
