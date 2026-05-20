@@ -330,8 +330,13 @@ export function HeroSection() {
         }
       });
 
-      // Dummy timeline stretch
-      tl.to({}, { duration: 1 });
+      // Cinematic canvas reactive transformations over scroll
+      tl.to(canvas, {
+        scale: 1.15,
+        yPercent: 4, // downward drift for parallax depth
+        filter: 'brightness(0.3) contrast(1.4) saturate(1.1) blur(6px)',
+        ease: 'none'
+      }, 0);
 
       // 1. Long Screen Time: Kanji remains stable from progress 0 to 0.25
       // 2. Elegant Dissolve: gentle drift upward from progress 0.25 to 0.40
@@ -413,6 +418,8 @@ export function HeroSection() {
         className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
         style={{
           filter: 'brightness(0.65) contrast(1.35) saturate(1.2)',
+          transform: 'translate3d(0, 0, 0)',
+          willChange: 'transform',
         }}
       />
 

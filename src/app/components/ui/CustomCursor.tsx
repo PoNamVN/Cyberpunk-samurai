@@ -13,22 +13,28 @@ export function CustomCursor() {
   const [slashes, setSlashes] = useState<Slash[]>([]);
   
   const cursorRef = useRef<HTMLDivElement>(null);
+  const targetPos = useRef({ x: 0, y: 0 });
+  const currentPos = useRef({ x: 0, y: 0 });
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    const cursor = cursorRef.current;
-
-    // 1. Mouse movement tracking - Direct DOM translate3d for ABSOLUTE ZERO DELAY
+    // 1. Mouse movement tracking - updates target coordinates
     const handleMouseMove = (e: MouseEvent) => {
       setIsVisible(true);
-      if (cursor) {
-        // Direct style mutation runs at raw hardware rendering speed, bypassing React task scheduling lag
-        cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      targetPos.current = { x: e.clientX, y: e.clientY };
+      
+      // Prevent cursor from sliding in from (0,0) on first enter
+      if (!hasInitialized.current) {
+        currentPos.current = { x: e.clientX, y: e.clientY };
+        hasInitialized.current = true;
       }
     };
 
-    // 2. Global Hover detection
+    // 2. Global Hover detection for interactive elements
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      if (!target) return;
+
       const isInteractive = 
         target.tagName === 'BUTTON' || 
         target.tagName === 'A' || 
@@ -47,7 +53,7 @@ export function CustomCursor() {
       setIsHovered(false);
     };
 
-    // 3. Click Slash spawn (Highly aggressive, instant cutting sweep)
+    // 3. Global Click Slash spawn
     const handleGlobalClick = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       const angles = [-35, -15, 15, 35, -45, 45];
@@ -73,11 +79,33 @@ export function CustomCursor() {
     window.addEventListener('mouseout', handleMouseOut);
     window.addEventListener('click', handleGlobalClick);
 
+    // 4. Spring Physics LERP loop for cursor trailing
+    let animId: number;
+    const updateCursorPhysics = () => {
+      if (hasInitialized.current) {
+        const dx = targetPos.current.x - currentPos.current.x;
+        const dy = targetPos.current.y - currentPos.current.y;
+
+        // Easing interpolation (22% per frame for absolute butter trailing)
+        currentPos.current.x += dx * 0.22;
+        currentPos.current.y += dy * 0.22;
+
+        if (cursorRef.current) {
+          cursorRef.current.style.transform = `translate3d(${currentPos.current.x}px, ${currentPos.current.y}px, 0)`;
+        }
+      }
+
+      animId = requestAnimationFrame(updateCursorPhysics);
+    };
+
+    animId = requestAnimationFrame(updateCursorPhysics);
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseover', handleMouseOver);
       window.removeEventListener('mouseout', handleMouseOut);
       window.removeEventListener('click', handleGlobalClick);
+      cancelAnimationFrame(animId);
     };
   }, []);
 

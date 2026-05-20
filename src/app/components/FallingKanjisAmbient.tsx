@@ -1,23 +1,25 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
-interface FallingKanji {
+interface KanjiParticle {
   id: number;
   char: string;
-  x: number; // Percentage width
-  speed: number; // CSS Animation speed (seconds)
-  size: number; // Font size (px)
-  delay: number; // Start delay
-  depth: 'foreground' | 'midground' | 'background';
-}
-
-interface SlicedKanji {
-  id: number;
-  char: string;
-  x: number; // Pixel coordinate
-  y: number; // Pixel coordinate
+  x: number;
+  y: number;
+  speed: number;
   size: number;
   angle: number;
+  rotationSpeed: number;
   depth: 'foreground' | 'midground' | 'background';
+  opacity: number;
+  color: string;
+  glowColor: string;
+  glowBlur: number;
+
+  // Sliced state
+  isSliced: boolean;
+  splitAngle: number; // Cut line angle (rad)
+  sliceTime: number;  // Ticker for sliced fragment physics
+  driftSpeed: number;
 }
 
 const KANJI_LIST = ['武', '士', '道', '影', '斬', '剣', '魂', '死', '生', '刃', '闇', '光', '忍', '心'];
@@ -27,11 +29,11 @@ export function FallingKanjisAmbient({
 }: { 
   burstTrigger?: number; 
 }) {
-  const [activeKanjis, setActiveKanjis] = useState<FallingKanji[]>([]);
-  const [slicedKanjis, setSlicedKanjis] = useState<SlicedKanji[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const particlesRef = useRef<KanjiParticle[]>([]);
   const nextId = useRef(0);
-  const spawnTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const lastMousePos = useRef({ x: 0, y: 0, active: false });
 
   // Synthesize physical sword slash sound dynamically using Web Audio API
   const playSlashSound = () => {
@@ -75,235 +77,314 @@ export function FallingKanjisAmbient({
   };
 
   // Helper to determine depth class based on size
-  const getDepthInfo = (size: number): { depth: 'foreground' | 'midground' | 'background'; speed: number } => {
-    if (size >= 48) {
-      return { depth: 'foreground', speed: 3.5 + Math.random() * 2 }; // Faster falling
-    } else if (size >= 32) {
-      return { depth: 'midground', speed: 5.5 + Math.random() * 2.5 };
+  const getDepthInfo = (size: number): { 
+    depth: 'foreground' | 'midground' | 'background'; 
+    speed: number;
+    opacity: number;
+    glowBlur: number;
+  } => {
+    if (size >= 44) {
+      return { 
+        depth: 'foreground', 
+        speed: 2.2 + Math.random() * 1.5, 
+        opacity: 0.95,
+        glowBlur: 18
+      };
+    } else if (size >= 28) {
+      return { 
+        depth: 'midground', 
+        speed: 1.4 + Math.random() * 1.0, 
+        opacity: 0.75,
+        glowBlur: 10
+      };
     } else {
-      return { depth: 'background', speed: 8 + Math.random() * 4 }; // Slower falling
+      return { 
+        depth: 'background', 
+        speed: 0.8 + Math.random() * 0.6, 
+        opacity: 0.4,
+        glowBlur: 4
+      };
     }
   };
 
-  // 1. Spawning Loop: Ambient background fall
-  useEffect(() => {
-    const spawnKanji = () => {
-      setActiveKanjis((prev) => {
-        if (prev.length >= 18) return prev; // Performance cap
+  // Add a new particle
+  const spawnKanji = (isBurst = false) => {
+    const width = window.innerWidth;
+    const size = 18 + Math.random() * 44; // 18px to 62px
+    const { depth, speed, opacity, glowBlur } = getDepthInfo(size);
 
-        const size = 18 + Math.random() * 44; // 18px to 62px
-        const { depth, speed } = getDepthInfo(size);
+    const colors = ['#ffffff', '#ffffff', '#ff3b30', '#00ffff', '#ff00ff'];
+    const pColor = colors[Math.floor(Math.random() * colors.length)];
+    const glowColors = ['#ff0000', '#ff0000', '#ff3b30', '#00ffff', '#ff00ff'];
+    const pGlow = glowColors[Math.floor(Math.random() * glowColors.length)];
 
-        const newKanji: FallingKanji = {
-          id: nextId.current++,
-          char: KANJI_LIST[Math.floor(Math.random() * KANJI_LIST.length)],
-          x: 4 + Math.random() * 92, // Keep spacing well within screen bounds
-          speed,
-          size,
-          delay: Math.random() * 0.5,
-          depth
-        };
-        return [...prev, newKanji];
-      });
+    const newParticle: KanjiParticle = {
+      id: nextId.current++,
+      char: KANJI_LIST[Math.floor(Math.random() * KANJI_LIST.length)],
+      x: 30 + Math.random() * (width - 60),
+      y: -60,
+      speed: isBurst ? speed * 1.3 : speed,
+      size,
+      angle: (Math.random() * 30 - 15) * Math.PI / 180, // -15deg to 15deg
+      rotationSpeed: (Math.random() * 0.4 - 0.2) * Math.PI / 180,
+      depth,
+      opacity,
+      color: pColor,
+      glowColor: pGlow,
+      glowBlur,
+      isSliced: false,
+      splitAngle: 0,
+      sliceTime: 0,
+      driftSpeed: 1.5 + Math.random() * 2
     };
 
-    // Ambient spawn rate: every 1.5 seconds
-    spawnTimerRef.current = setInterval(spawnKanji, 1500);
-    
-    // Spawn initial set
-    for (let i = 0; i < 4; i++) {
-      setTimeout(spawnKanji, i * 400);
+    particlesRef.current.push(newParticle);
+  };
+
+  // 1. Spawning timer loop
+  useEffect(() => {
+    // Spawning interval
+    const interval = setInterval(() => {
+      if (particlesRef.current.filter(p => !p.isSliced).length < 18) {
+        spawnKanji();
+      }
+    }, 1200);
+
+    // Initial set
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => spawnKanji(), i * 350);
     }
 
-    return () => {
-      if (spawnTimerRef.current) clearInterval(spawnTimerRef.current);
-    };
+    return () => clearInterval(interval);
   }, []);
 
-  // 2. Trigger bursts of Kanjis when user clicks 'PLAY NOW'
+  // 2. Celebratory bursts of kanjis
   useEffect(() => {
     if (burstTrigger === 0) return;
 
-    // Spawn 10 Kanjis in quick succession as a celebratory visual burst
-    const spawnBurst = () => {
-      setActiveKanjis((prev) => {
-        const newBurst: FallingKanji[] = [];
-        for (let i = 0; i < 10; i++) {
-          const size = 20 + Math.random() * 42;
-          const { depth, speed } = getDepthInfo(size);
-          newBurst.push({
-            id: nextId.current++,
-            char: KANJI_LIST[Math.floor(Math.random() * KANJI_LIST.length)],
-            x: 5 + Math.random() * 90,
-            speed: speed * 0.75, // Burst kanjis fall a bit faster for dynamic impact
-            size,
-            delay: Math.random() * 0.8,
-            depth
-          });
-        }
-        return [...prev, ...newBurst].slice(0, 25); // Cap to 25 to protect performance
-      });
-    };
-
-    spawnBurst();
+    for (let i = 0; i < 12; i++) {
+      setTimeout(() => {
+        spawnKanji(true);
+      }, Math.random() * 600);
+    }
   }, [burstTrigger]);
 
-  // 3. Handle Slashes (MouseDown or Dragging with click)
-  const handleKanjiSlash = (id: number, char: string, size: number, depth: 'foreground' | 'midground' | 'background', e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
+  // 3. Canvas Resizing and Main Animation Loop
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    playSlashSound();
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
+    let animId: number;
 
-    const splitAngle = -30 + Math.random() * 60;
-
-    const newSliced: SlicedKanji = {
-      id: Date.now() + Math.random(),
-      char,
-      x,
-      y,
-      size,
-      angle: splitAngle,
-      depth
+    const handleResize = () => {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.restore(); // reset to clear standard scales
+      ctx.save();
+      ctx.scale(dpr, dpr);
     };
 
-    setSlicedKanjis((prev) => [...prev, newSliced]);
-    setActiveKanjis((prev) => prev.filter((k) => k.id !== id));
+    handleResize();
+    window.addEventListener('resize', handleResize);
 
-    // Clear slice shards after transition
-    setTimeout(() => {
-      setSlicedKanjis((prev) => prev.filter((s) => s.id !== newSliced.id));
-    }, 450);
-  };
+    // Track mouse events globally
+    const handleMouseDown = (e: MouseEvent) => {
+      lastMousePos.current = { x: e.clientX, y: e.clientY, active: true };
+    };
 
-  const handleAnimationEnd = (id: number) => {
-    setActiveKanjis((prev) => prev.filter((k) => k.id !== id));
-  };
+    const handleMouseUp = () => {
+      lastMousePos.current.active = false;
+    };
 
-  const getOpacity = (depth: 'foreground' | 'midground' | 'background') => {
-    if (depth === 'foreground') return 0.95;
-    if (depth === 'midground') return 0.75;
-    return 0.45;
-  };
+    const handleMouseMove = (e: MouseEvent) => {
+      const last = lastMousePos.current;
+      const currX = e.clientX;
+      const currY = e.clientY;
 
-  const getZIndex = (depth: 'foreground' | 'midground' | 'background') => {
-    if (depth === 'foreground') return 'z-[40]';
-    if (depth === 'midground') return 'z-[20]';
-    return 'z-[5]';
-  };
+      // Slice check: only if dragging/clicking
+      const isDragging = e.buttons === 1 || last.active;
+
+      if (isDragging) {
+        const particles = particlesRef.current;
+
+        // Perform linear interpolation collision checking (bulletproof fast slash detection)
+        const steps = 6;
+        for (let pIndex = 0; pIndex < particles.length; pIndex++) {
+          const p = particles[pIndex];
+          if (p.isSliced) continue;
+
+          for (let step = 0; step <= steps; step++) {
+            const t = step / steps;
+            const checkX = last.x + (currX - last.x) * t;
+            const checkY = last.y + (currY - last.y) * t;
+
+            const dist = Math.hypot(checkX - p.x, checkY - p.y);
+
+            // Bounding radius collision threshold
+            if (dist < p.size * 0.9) {
+              p.isSliced = true;
+              p.sliceTime = 1;
+              // Calculate slash angle based on cursor drag vector
+              const dx = currX - last.x;
+              const dy = currY - last.y;
+              p.splitAngle = dy === 0 && dx === 0 ? (Math.random() * 60 - 30) * Math.PI / 180 : Math.atan2(dy, dx);
+              playSlashSound();
+              break;
+            }
+          }
+        }
+      }
+
+      lastMousePos.current = { x: currX, y: currY, active: isDragging };
+    };
+
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', handleMouseMove);
+
+    // --- MAIN RENDER AND PHYSICS UPDATE LOOP ---
+    const updateAndRender = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const particles = particlesRef.current;
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+
+        // 1. Particle Physics Update
+        if (!p.isSliced) {
+          p.y += p.speed;
+          p.angle += p.rotationSpeed;
+
+          // Remove off-screen particles
+          if (p.y > h + 80) {
+            particles.splice(i, 1);
+            continue;
+          }
+        } else {
+          // Sliced piece physics (fall with gravity, slide apart)
+          p.sliceTime += 1;
+          p.y += p.speed + p.sliceTime * 0.18; // accelerated fall
+
+          // If too old or fully faded, remove
+          if (p.sliceTime > 28) {
+            particles.splice(i, 1);
+            continue;
+          }
+        }
+
+        // 2. Particle Draw
+        ctx.save();
+        
+        // Depth-based blur or shadow configuration
+        ctx.globalAlpha = p.isSliced 
+          ? Math.max(0, p.opacity * (1 - p.sliceTime / 28)) 
+          : p.opacity;
+
+        ctx.font = `bold ${p.size}px "Yu Mincho", "MS Mincho", "Hiragino Mincho Pro", "Noto Serif JP", serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Glowing Neon Shadow
+        ctx.shadowColor = p.glowColor;
+        ctx.shadowBlur = p.glowBlur;
+        ctx.fillStyle = p.color;
+
+        if (!p.isSliced) {
+          // Draw standard falling intact Kanji
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.angle);
+
+          // RGB Glitch flickering effect (subtle)
+          if (Math.random() > 0.96) {
+            ctx.shadowColor = '#00ffff';
+            ctx.shadowBlur = p.glowBlur * 1.5;
+            ctx.translate(Math.random() * 4 - 2, 0);
+          }
+
+          ctx.fillText(p.char, 0, 0);
+        } else {
+          // DRAW SLICED FRAGMENTS DRIFTING APART
+          const driftOffset = p.sliceTime * p.driftSpeed;
+          
+          // --- LEFT HALF SHARD ---
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.angle);
+          
+          // Translate away from slash vector perpendicularly
+          const driftX1 = -Math.sin(p.splitAngle) * driftOffset;
+          const driftY1 = Math.cos(p.splitAngle) * driftOffset;
+          ctx.translate(driftX1, driftY1);
+          ctx.rotate(-p.sliceTime * 0.03); // spin left shard counter-clockwise
+          
+          // Cut right side of text relative to slash line
+          ctx.save();
+          ctx.rotate(p.splitAngle - Math.PI / 2); // align cut axis
+          ctx.beginPath();
+          ctx.rect(-p.size * 2.5, -p.size * 2.5, p.size * 2.5, p.size * 5.0);
+          ctx.clip();
+          ctx.restore();
+          
+          // Render Left Halve
+          ctx.fillText(p.char, 0, 0);
+          ctx.restore();
+
+
+          // --- RIGHT HALF SHARD ---
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.angle);
+          
+          // Translate in opposite direction
+          const driftX2 = Math.sin(p.splitAngle) * driftOffset;
+          const driftY2 = -Math.cos(p.splitAngle) * driftOffset;
+          ctx.translate(driftX2, driftY2);
+          ctx.rotate(p.sliceTime * 0.03); // spin right shard clockwise
+          
+          // Cut left side of text
+          ctx.save();
+          ctx.rotate(p.splitAngle - Math.PI / 2); // align cut axis
+          ctx.beginPath();
+          ctx.rect(0, -p.size * 2.5, p.size * 2.5, p.size * 5.0);
+          ctx.clip();
+          ctx.restore();
+          
+          // Render Right Halve
+          ctx.fillText(p.char, 0, 0);
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+
+      animId = requestAnimationFrame(updateAndRender);
+    };
+
+    animId = requestAnimationFrame(updateAndRender);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-30 select-none overflow-hidden">
-      {/* Glitch styled keyframes */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes ambient-kanji-fall {
-          0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
-          15% { opacity: 1; }
-          85% { opacity: 1; }
-          100% { transform: translateY(105vh) rotate(60deg); opacity: 0; }
-        }
-        @keyframes ambient-slice-left {
-          0% { transform: translate(0, 0) rotate(0deg); opacity: 1; filter: brightness(2) drop-shadow(0 0 10px #00ffff); }
-          100% { transform: translate(-60px, -30px) rotate(-45deg); opacity: 0; filter: brightness(1); }
-        }
-        @keyframes ambient-slice-right {
-          0% { transform: translate(0, 0) rotate(0deg); opacity: 1; filter: brightness(2) drop-shadow(0 0 10px #ff00ff); }
-          100% { transform: translate(60px, 30px) rotate(45deg); opacity: 0; filter: brightness(1); }
-        }
-        @keyframes ambient-kanji-glitch {
-          0% { text-shadow: 0 0 12px rgba(255, 0, 0, 0.95), -2px 0 #00ffff, 2px 0 #ff00ff; transform: translate(0, 0) skewX(0deg); }
-          10% { text-shadow: 0 0 12px rgba(255, 0, 0, 0.95), 2px -1px #00ffff, -2px 1px #ff00ff; transform: translate(-2px, 1px) skewX(5deg); }
-          20% { text-shadow: 0 0 8px rgba(255, 0, 0, 0.8), -1px 2px #00ffff, 1px -2px #ff00ff; transform: translate(1px, -1px) skewX(-5deg); }
-          30% { text-shadow: 0 0 12px rgba(255, 0, 0, 0.95), 0 0 0 transparent; transform: translate(0, 0) skewX(0deg); }
-          100% { text-shadow: 0 0 12px rgba(255, 0, 0, 0.95), -2px 0 #00ffff, 2px 0 #ff00ff; transform: translate(0, 0) skewX(0deg); }
-        }
-        .ambient-kanji-glow {
-          animation: ambient-kanji-glitch 0.4s infinite steps(2);
-        }
-      `}} />
-
-      {/* Active Falling Kanjis */}
-      {activeKanjis.map((kanji) => {
-        const opacity = getOpacity(kanji.depth);
-        const zClass = getZIndex(kanji.depth);
-
-        return (
-          <div
-            key={kanji.id}
-            className={`absolute pointer-events-auto cursor-none select-none group flex items-center justify-center ${zClass}`}
-            style={{
-              left: `${kanji.x}%`,
-              top: 0,
-              fontSize: `${kanji.size}px`,
-              width: `${kanji.size * 1.8}px`,
-              height: `${kanji.size * 1.8}px`,
-              opacity,
-              animation: `ambient-kanji-fall ${kanji.speed}s linear ${kanji.delay}s forwards`,
-            }}
-            onAnimationEnd={() => handleAnimationEnd(kanji.id)}
-            onMouseDown={(e) => handleKanjiSlash(kanji.id, kanji.char, kanji.size, kanji.depth, e)}
-            onMouseEnter={(e) => {
-              if (e.buttons === 1) {
-                handleKanjiSlash(kanji.id, kanji.char, kanji.size, kanji.depth, e as any);
-              }
-            }}
-          >
-            {/* Ambient Kanji glowing with RGB shifting glitch animation */}
-            <span className="font-serif font-bold text-white ambient-kanji-glow hover:text-red-500 hover:scale-115 transition-transform duration-100 cursor-none">
-              {kanji.char}
-            </span>
-          </div>
-        );
-      })}
-
-      {/* Sliced Fragments */}
-      {slicedKanjis.map((sliced) => {
-        const clipLeft = 'polygon(0 0, 100% 0, 0 100%)';
-        const clipRight = 'polygon(100% 0, 100% 100%, 0 100%)';
-        const opacity = getOpacity(sliced.depth);
-        const zClass = getZIndex(sliced.depth);
-
-        return (
-          <div
-            key={sliced.id}
-            className={`absolute pointer-events-none flex items-center justify-center ${zClass}`}
-            style={{
-              left: sliced.x,
-              top: sliced.y,
-              fontSize: `${sliced.size}px`,
-              transform: `translate(-50%, -50%) rotate(${sliced.angle}deg)`,
-              width: `${sliced.size * 1.5}px`,
-              height: `${sliced.size * 1.5}px`,
-              opacity
-            }}
-          >
-            {/* Left half slice */}
-            <span
-              className="absolute font-serif font-bold text-white ambient-kanji-glow"
-              style={{
-                clipPath: clipLeft,
-                animation: 'ambient-slice-left 0.4s cubic-bezier(0.1, 0.8, 0.2, 1) forwards'
-              }}
-            >
-              {sliced.char}
-            </span>
-
-            {/* Right half slice */}
-            <span
-              className="absolute font-serif font-bold text-white ambient-kanji-glow"
-              style={{
-                clipPath: clipRight,
-                animation: 'ambient-slice-right 0.4s cubic-bezier(0.1, 0.8, 0.2, 1) forwards'
-              }}
-            >
-              {sliced.char}
-            </span>
-          </div>
-        );
-      })}
-    </div>
+    <canvas 
+      ref={canvasRef} 
+      className="fixed inset-0 pointer-events-none z-30 select-none overflow-hidden"
+      style={{ mixBlendMode: 'screen' }}
+    />
   );
 }
