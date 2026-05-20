@@ -552,22 +552,22 @@ export function HeroSection() {
           >
             {/* HONOR (Futuristic Split Metal Silver Gradient) */}
             <span 
-              className="tracking-widest font-black uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-neutral-400 drop-shadow-[0_0_15px_rgba(255,255,255,0.45)] transition-all duration-300"
-              style={{ fontWeight: 900 }}
+              className="inline-block tracking-widest font-black uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-neutral-400 drop-shadow-[0_0_15px_rgba(255,255,255,0.45)] transition-all duration-300"
+              style={{ fontWeight: 900, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
             >
               <ScrambleText text="HONOR" isRevealed={isRevealed} />
             </span>
 
             {/* MEETS (Highly styled microchip connector badge) */}
-            <span className="relative z-10 font-mono text-[10px] md:text-xs tracking-[0.35em] text-[#FF3B30] bg-[#FF3B30]/10 border border-[#FF3B30]/35 px-4 py-2 rounded-sm backdrop-blur-md uppercase select-none lg:translate-y-1 mx-2 flex items-center gap-1.5 shadow-[0_0_15px_rgba(255,59,48,0.15)] animate-pulse">
-              <span className="inline-block w-1 h-1 bg-[#FF3B30] rounded-full animate-ping"></span>
+            <span className="inline-block relative z-10 font-mono text-[10px] md:text-xs tracking-[0.35em] text-[#FF3B30] bg-[#FF3B30]/10 border border-[#FF3B30]/35 px-4 py-2 rounded-sm backdrop-blur-md uppercase select-none lg:translate-y-1 mx-2 flex items-center gap-1.5 shadow-[0_0_15px_rgba(255,59,48,0.15)] animate-pulse">
+              <span className="inline-block w-1.5 h-1.5 bg-[#FF3B30] rounded-full animate-ping"></span>
               [ <span className="text-white font-bold">MEETS</span> ]
             </span>
 
             {/* CHAOS (Premium Dual-Glow Shifting Crimson-Red-Orange Gradient) */}
             <span 
-              className="tracking-wide font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FF0055] via-[#FF3B30] to-[#FF9500] drop-shadow-[0_0_35px_rgba(255,0,85,0.8)]"
-              style={{ fontFamily: '"Syncopate", "Orbitron", sans-serif', fontWeight: 900 }}
+              className="inline-block tracking-wide font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FF0055] via-[#FF3B30] to-[#FF9500] drop-shadow-[0_0_35px_rgba(255,0,85,0.8)]"
+              style={{ fontFamily: '"Syncopate", "Orbitron", sans-serif', fontWeight: 900, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
             >
               <ScrambleText text="CHAOS" isRevealed={isRevealed} />
             </span>
@@ -629,10 +629,8 @@ export function HeroSection() {
           <div className="absolute top-0 right-0 w-3 h-3 bg-white opacity-0 group-hover:opacity-30 transition-opacity"></div>
         </button>
 
-        {/* Localized Glitch Keyframe CSS Injection & Google Fonts Import */}
+        {/* Localized Glitch Keyframe CSS Injection */}
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Oswald:wght@500;700&family=Space+Grotesk:wght@700;900&family=Syncopate:wght@700;900&display=swap');
-          
           @keyframes scan {
             0% { top: 0%; opacity: 0; }
             5% { opacity: 0.35; }
