@@ -504,34 +504,80 @@ export function HeroSection() {
       </div>
 
       {/* Hero Content */}
-      <div ref={contentRef} className="relative z-10 w-full max-w-7xl pl-8 md:pl-20 lg:pl-32">
-        <div ref={titleRef} className="relative mb-10 md:mb-12 border-l-2 border-[#FF0000] pl-6 md:pl-8">
+      <div ref={contentRef} className="relative z-10 w-full max-w-6xl mx-auto px-4 flex flex-col items-center justify-center text-center">
+        <div 
+          ref={titleRef} 
+          className="relative mb-12 flex flex-col items-center justify-center text-center w-full max-w-5xl px-6 py-12 sm:px-12 sm:py-16 border border-[#FF0000]/25 bg-black/45 backdrop-blur-[3px] rounded-lg shadow-[0_0_40px_rgba(255,0,0,0.12)] overflow-hidden select-none group/frame"
+        >
+          {/* Cyber grid pattern overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,0,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,0,0,0.015)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none z-0"></div>
+
+          {/* Holographic scanning laser line */}
+          <div className="absolute left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#FF0000]/40 to-transparent shadow-[0_0_8px_#FF0000] pointer-events-none z-0 animate-[scan_5s_infinite_ease-in-out]"></div>
+
+          {/* Corner Brackets */}
+          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#FF0000] shadow-[0_0_6px_rgba(255,0,0,0.5)] z-10 transition-all duration-300 group-hover/frame:w-10 group-hover/frame:h-10"></div>
+          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[#FF0000] shadow-[0_0_6px_rgba(255,0,0,0.5)] z-10 transition-all duration-300 group-hover/frame:w-10 group-hover/frame:h-10"></div>
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[#FF0000] shadow-[0_0_6px_rgba(255,0,0,0.5)] z-10 transition-all duration-300 group-hover/frame:w-10 group-hover/frame:h-10"></div>
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#FF0000] shadow-[0_0_6px_rgba(255,0,0,0.5)] z-10 transition-all duration-300 group-hover/frame:w-10 group-hover/frame:h-10"></div>
+
+          {/* Tactical Telemetry Text Indicators */}
+          <div className="absolute top-2 left-4 font-mono text-[8px] text-[#FF0000]/50 tracking-[0.2em] pointer-events-none hidden sm:block">
+            SYS_LOCK: 0x90-SHINOBI
+          </div>
+          <div className="absolute top-2 right-4 font-mono text-[8px] text-[#FF0000]/50 tracking-[0.2em] pointer-events-none hidden sm:block">
+            FR_RATE: 120fps // SECURE
+          </div>
+          <div className="absolute bottom-2 left-4 font-mono text-[8px] text-[#FF0000]/50 tracking-[0.2em] pointer-events-none hidden sm:block">
+            TACTICAL_COORD: 35.0116_N
+          </div>
+          <div className="absolute bottom-2 right-4 font-mono text-[8px] text-[#FF0000]/50 tracking-[0.2em] pointer-events-none hidden sm:block">
+            THREAT: OMEGA_LEVEL
+          </div>
+
+          {/* Outer Border Side Ticks */}
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-8 bg-gradient-to-b from-[#FF0000]/20 via-[#FF0000] to-[#FF0000]/20"></div>
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[2px] h-8 bg-gradient-to-b from-[#FF0000]/20 via-[#FF0000] to-[#FF0000]/20"></div>
+
           {/* Tech HUD Subtitle Tag */}
-          <div className="flex items-center gap-3 mb-4 font-mono text-[10px] md:text-xs tracking-[0.3em] text-[#FF0000] uppercase select-none">
+          <div className="relative z-10 flex items-center gap-3 mb-6 font-mono text-[10px] md:text-xs tracking-[0.4em] text-[#FF0000] uppercase select-none justify-center">
             <span className="inline-block w-1.5 h-1.5 bg-[#FF0000] shadow-[0_0_8px_#FF0000] rounded-sm animate-pulse"></span>
             <span>SYSTEM_PROTOCOL: SHINOBI_ACTIVE</span>
             <span className="text-white/30 hidden sm:inline">// EST.2026</span>
           </div>
 
           <h1
-            className="text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem] xl:text-[10rem] uppercase tracking-tighter leading-none relative text-white flex flex-col md:flex-row items-start md:items-center whitespace-normal md:whitespace-nowrap gap-x-4 lg:gap-x-8 gap-y-2 md:gap-y-0"
-            style={{ fontFamily: 'Teko, sans-serif', fontWeight: 700 }}
+            className="relative z-10 text-4xl sm:text-6xl md:text-7xl lg:text-[7rem] xl:text-[8rem] uppercase tracking-wider leading-none flex flex-col lg:flex-row items-center justify-center whitespace-normal lg:whitespace-nowrap gap-x-4 lg:gap-x-6 gap-y-4 lg:gap-y-0 text-center select-none w-full"
+            style={{ fontFamily: '"Space Grotesk", "Orbitron", sans-serif', fontWeight: 900 }}
           >
-            {/* HONOR (Pure White, sleek tracking) */}
-            <span className="text-white tracking-wider leading-none drop-shadow-[0_0_12px_rgba(255,255,255,0.08)]">
+            {/* HONOR (Futuristic Split Metal Silver Gradient) */}
+            <span 
+              className="tracking-widest font-black uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-neutral-400 drop-shadow-[0_0_15px_rgba(255,255,255,0.45)] transition-all duration-300"
+              style={{ fontWeight: 900 }}
+            >
               <ScrambleText text="HONOR" isRevealed={isRevealed} />
             </span>
 
-            {/* MEETS (Tech-subtext style with slashes) */}
-            <span className="text-xl md:text-3xl lg:text-4xl xl:text-5xl font-mono tracking-widest text-[#FF0000]/60 select-none md:-translate-y-2">
-              // MEETS //
+            {/* MEETS (Highly styled microchip connector badge) */}
+            <span className="relative z-10 font-mono text-[10px] md:text-xs tracking-[0.35em] text-[#FF3B30] bg-[#FF3B30]/10 border border-[#FF3B30]/35 px-4 py-2 rounded-sm backdrop-blur-md uppercase select-none lg:translate-y-1 mx-2 flex items-center gap-1.5 shadow-[0_0_15px_rgba(255,59,48,0.15)] animate-pulse">
+              <span className="inline-block w-1 h-1 bg-[#FF3B30] rounded-full animate-ping"></span>
+              [ <span className="text-white font-bold">MEETS</span> ]
             </span>
 
-            {/* CHAOS (Vibrant red neon cyberpunk glow) */}
-            <span className="text-[#FF0000] tracking-tighter leading-none font-extrabold drop-shadow-[0_0_35px_rgba(255,0,0,0.85)]">
+            {/* CHAOS (Premium Dual-Glow Shifting Crimson-Red-Orange Gradient) */}
+            <span 
+              className="tracking-wide font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FF0055] via-[#FF3B30] to-[#FF9500] drop-shadow-[0_0_35px_rgba(255,0,85,0.8)]"
+              style={{ fontFamily: '"Syncopate", "Orbitron", sans-serif', fontWeight: 900 }}
+            >
               <ScrambleText text="CHAOS" isRevealed={isRevealed} />
             </span>
           </h1>
+
+          {/* Premium HUD Tech Horizontal Center Divider */}
+          <div className="relative z-10 w-64 h-[1px] bg-gradient-to-r from-transparent via-[#FF0000]/60 to-transparent relative mx-auto mt-8 select-none">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-[#FF0000] shadow-[0_0_10px_#FF0000] rounded-full animate-ping"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-[#FF0000] rounded-full"></div>
+          </div>
         </div>
 
         <button
@@ -583,8 +629,18 @@ export function HeroSection() {
           <div className="absolute top-0 right-0 w-3 h-3 bg-white opacity-0 group-hover:opacity-30 transition-opacity"></div>
         </button>
 
-        {/* Localized Glitch Keyframe CSS Injection */}
+        {/* Localized Glitch Keyframe CSS Injection & Google Fonts Import */}
         <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Oswald:wght@500;700&family=Space+Grotesk:wght@700;900&family=Syncopate:wght@700;900&display=swap');
+          
+          @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            5% { opacity: 0.35; }
+            50% { opacity: 0.55; }
+            95% { opacity: 0.35; }
+            100% { top: 100%; opacity: 0; }
+          }
+          
           @keyframes cyber-glitch-1 {
             0% { clip-path: inset(40% 0 61% 0); transform: translate(-5px, -3px); }
             20% { clip-path: inset(92% 0 1% 0); transform: translate(3px, 5px); }
