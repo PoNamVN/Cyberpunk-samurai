@@ -233,7 +233,7 @@ export function FallingKanjisAmbient({
               const dx = currX - last.x;
               const dy = currY - last.y;
               p.splitAngle = dy === 0 && dx === 0 ? (Math.random() * 60 - 30) * Math.PI / 180 : Math.atan2(dy, dx);
-              playSlashSound();
+              // playSlashSound(); // Disabled per user request to completely silence click/slash sound
               break;
             }
           }
