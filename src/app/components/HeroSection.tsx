@@ -24,72 +24,10 @@ export function HeroSection() {
 
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
-  const audioCtxRef = useRef<AudioContext | null>(null);
+
   const lastDrawnFrameIndexRef = useRef<number>(-1);
 
-  // --- Cyber-Slash Sound & Screen Shake Integration ---
-  const playCyberSlashSound = () => {
-    try {
-      if (!audioCtxRef.current) {
-        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-        audioCtxRef.current = new AudioContextClass();
-      }
-      
-      const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-      
-      // Heavy resonance lowpass filter
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(1400, ctx.currentTime);
-      filter.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.35);
-      filter.Q.setValueAtTime(6, ctx.currentTime);
 
-      // White Noise buffer for the friction/whoosh sound
-      const bufferSize = ctx.sampleRate * 0.35;
-      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
-      }
-      const noise = ctx.createBufferSource();
-      noise.buffer = buffer;
-
-      // Noise volume envelope
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.25, ctx.currentTime);
-      noiseGain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.35);
-
-      // Sawtooth laser sweep node (metallic edge)
-      const osc = ctx.createOscillator();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(950, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(70, ctx.currentTime + 0.3);
-
-      const oscGain = ctx.createGain();
-      oscGain.gain.setValueAtTime(0.18, ctx.currentTime);
-      oscGain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.25);
-
-      // Connect noise and synth
-      noise.connect(noiseGain);
-      noiseGain.connect(filter);
-
-      osc.connect(oscGain);
-      oscGain.connect(filter);
-
-      filter.connect(ctx.destination);
-
-      noise.start();
-      osc.start();
-
-      noise.stop(ctx.currentTime + 0.35);
-      osc.stop(ctx.currentTime + 0.35);
-    } catch (e) {
-      console.warn("AudioContext blocked or failed to initialize", e);
-    }
-  };
 
   const triggerSlash = () => {
     // 1. Play Dynamic Cyber katana slash Whoosh Sound (Disabled per user request)

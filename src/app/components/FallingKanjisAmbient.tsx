@@ -32,49 +32,9 @@ export function FallingKanjisAmbient({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const particlesRef = useRef<KanjiParticle[]>([]);
   const nextId = useRef(0);
-  const audioCtxRef = useRef<AudioContext | null>(null);
+
   const lastMousePos = useRef({ x: 0, y: 0, active: false });
 
-  // Synthesize physical sword slash sound dynamically using Web Audio API
-  const playSlashSound = () => {
-    try {
-      if (!audioCtxRef.current) {
-        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-        audioCtxRef.current = new AudioContextClass();
-      }
-      
-      const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const filter = ctx.createBiquadFilter();
-
-      // Sharp lowpass filter for cybernetic/metallic slash whoosh
-      filter.type = 'highpass';
-      filter.frequency.setValueAtTime(1000, ctx.currentTime);
-      filter.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.18);
-
-      osc.type = 'sawtooth';
-      // High pitch sweep down rapidly for sword slash whoosh
-      osc.frequency.setValueAtTime(1200, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.18);
-
-      gain.gain.setValueAtTime(0.18, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.18);
-
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.start();
-      osc.stop(ctx.currentTime + 0.18);
-    } catch (e) {
-      console.warn("Audio Context blocked or unsupported:", e);
-    }
-  };
 
   // Helper to determine depth class based on size (optimized glowBlur for high performance)
   const getDepthInfo = (size: number): { 
