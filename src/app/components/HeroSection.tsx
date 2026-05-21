@@ -25,6 +25,7 @@ export function HeroSection() {
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const lastDrawnFrameIndexRef = useRef<number>(-1);
 
   // --- Cyber-Slash Sound & Screen Shake Integration ---
   const playCyberSlashSound = () => {
@@ -189,7 +190,7 @@ export function HeroSection() {
     const handleResize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      drawFrame();
+      drawFrame(true);
     };
 
     // Smooth 3D Mouse Parallax Engine using GSAP quickTo (highly optimized, 0.00% lag)
@@ -219,7 +220,7 @@ export function HeroSection() {
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    const drawFrame = () => {
+    const drawFrame = (force = false) => {
       const target = targetProgressRef.current;
       let current = currentProgressRef.current;
 
@@ -238,6 +239,11 @@ export function HeroSection() {
         Math.max(0, Math.floor(current * (frames.length - 1)))
       );
 
+      // Skip redrawing if the frame index hasn't changed (unless forced on resize)
+      if (frameIndex === lastDrawnFrameIndexRef.current && !force) {
+        return;
+      }
+
       const img = frames[frameIndex];
       if (img && img.complete) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -253,6 +259,7 @@ export function HeroSection() {
         const y = (canvas.height - h) / 2;
 
         ctx.drawImage(img, x, y, w, h);
+        lastDrawnFrameIndexRef.current = frameIndex;
       }
     };
 

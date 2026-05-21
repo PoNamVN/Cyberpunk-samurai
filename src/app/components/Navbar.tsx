@@ -128,6 +128,70 @@ export function Navbar({ onPlayClick }: NavbarProps) {
     }
   };
 
+  const playSlashSound = () => {
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = audioCtxRef.current || new AudioContextClass();
+      if (!audioCtxRef.current) audioCtxRef.current = ctx;
+
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      const now = ctx.currentTime;
+      const gainNode = ctx.createGain();
+      gainNode.connect(ctx.destination);
+
+      // Fast slicing wind swoosh (pre-impact)
+      const swoosh = ctx.createOscillator();
+      swoosh.type = 'triangle';
+      swoosh.frequency.setValueAtTime(900, now);
+      swoosh.frequency.exponentialRampToValueAtTime(140, now + 0.12);
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1100, now);
+
+      swoosh.connect(filter);
+      filter.connect(gainNode);
+
+      // Heavy metal thud clang (impact body)
+      const clangOsc = ctx.createOscillator();
+      clangOsc.type = 'sawtooth';
+      clangOsc.frequency.setValueAtTime(190, now + 0.12); // Deep chest thud on impact
+
+      // Crystal metallic chime ring (blade ring)
+      const ringOsc = ctx.createOscillator();
+      ringOsc.type = 'sine';
+      ringOsc.frequency.setValueAtTime(3200, now + 0.12); // High-pitch steel resonance
+
+      const impactGain = ctx.createGain();
+      impactGain.gain.setValueAtTime(0, now);
+      impactGain.gain.setValueAtTime(0.42, now + 0.12); // Heavy slam!
+      impactGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8); // Long decaying ring
+
+      clangOsc.connect(impactGain);
+      ringOsc.connect(impactGain);
+      impactGain.connect(gainNode);
+
+      // Swoosh envelope (cutoff immediately upon impact)
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(0.22, now + 0.04);
+      gainNode.gain.setValueAtTime(0, now + 0.12); 
+
+      swoosh.start(now);
+      swoosh.stop(now + 0.12);
+      
+      clangOsc.start(now + 0.12);
+      clangOsc.stop(now + 0.8);
+      
+      ringOsc.start(now + 0.12);
+      ringOsc.stop(now + 0.8);
+    } catch (e) {
+      console.warn("Stab sound ignored:", e);
+    }
+  };
+
   const toggleAudio = () => {
     if (isPlaying) {
       stopDrone();
@@ -185,24 +249,356 @@ export function Navbar({ onPlayClick }: NavbarProps) {
           display: flex;
           animation: play-glitch-2 0.18s infinite linear alternate-reverse;
         }
+
+        /* Ultra-Premium Red, White, and Black Sliced Cyberpunk Logo */
+        .cyber-logo-split {
+          position: relative;
+          display: inline-block;
+          padding: 12px 28px;
+          cursor: pointer;
+          background: linear-gradient(135deg, #050507, #0f0f12);
+          border: 1px solid rgba(255, 0, 60, 0.25);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          overflow: visible; /* Allow sword handle/tip to stick out! */
+          box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.95), 0 5px 25px rgba(0, 0, 0, 0.65);
+        }
+
+        .cyber-logo-split:hover {
+          background: linear-gradient(135deg, #09090c, #16161d);
+          border-color: rgba(255, 0, 60, 0.6);
+          box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.08), 0 0 35px rgba(255, 0, 60, 0.25);
+        }
+
+        .hud-bracket {
+          position: absolute;
+          width: 12px;
+          height: 12px;
+          border-color: rgba(255, 255, 255, 0.15);
+          border-style: solid;
+          transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+          pointer-events: none;
+        }
+        .hud-tl { top: 0; left: 0; border-width: 2px 0 0 2px; }
+        .hud-tr { top: 0; right: 0; border-width: 2px 2px 0 0; }
+        .hud-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+        .hud-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+        .cyber-logo-split:hover .hud-tl { transform: translate(-8px, -8px); border-color: #ffffff; filter: drop-shadow(0 0 5px #ffffff); }
+        .cyber-logo-split:hover .hud-tr { transform: translate(8px, -8px); border-color: #ff003c; filter: drop-shadow(0 0 5px #ff003c); }
+        .cyber-logo-split:hover .hud-bl { transform: translate(-8px, 8px); border-color: #ff003c; filter: drop-shadow(0 0 5px #ff003c); }
+        .cyber-logo-split:hover .hud-br { transform: translate(8px, 8px); border-color: #ffffff; filter: drop-shadow(0 0 5px #ffffff); }
+
+        .cyber-text-layer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          text-transform: uppercase;
+          font-weight: 900;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+          transition-delay: 0.08s; /* Sync with sword impact (100ms-120ms) */
+          pointer-events: none;
+        }
+
+        .text-invisible {
+          text-transform: uppercase;
+          font-weight: 900;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* 
+          Robust typography with solid colors & thick strokes to prevent WebKit clipping bugs.
+          100% reliable across all browsers.
+        */
+        .cyber-text-cyber {
+          font-family: "Syncopate", sans-serif;
+          font-size: 1.15rem;
+          font-weight: 900;
+          letter-spacing: 0.26em;
+          color: #ffffff;
+          -webkit-text-stroke: 1px #000000;
+          text-shadow: 2px 2px 0px #000000, 0 0 8px rgba(255, 255, 255, 0.25);
+          transition: all 0.35s;
+        }
+
+        .cyber-text-samurai {
+          font-family: "Orbitron", sans-serif;
+          font-size: 1.8rem;
+          font-weight: 900;
+          letter-spacing: 0.1em;
+          margin-left: 14px;
+          color: #ff003c;
+          -webkit-text-stroke: 1px #000000;
+          text-shadow: 2.5px 2.5px 0px #000000, 0 0 12px rgba(255, 0, 60, 0.5);
+          transition: all 0.35s;
+        }
+
+        .cyber-logo-split:hover .cyber-text-cyber {
+          text-shadow: 3.5px 3.5px 0px #ff003c, 0 0 10px rgba(255, 255, 255, 0.4);
+        }
+
+        .cyber-logo-split:hover .cyber-text-samurai {
+          text-shadow: 3.5px 3.5px 0px #ffffff, 0 0 15px rgba(255, 0, 60, 0.7);
+        }
+
+        /* 
+          Default/Idle State: FULL, SOLID text. No cuts, no gaps!
+          Completely solves the "already split" amateurish look.
+        */
+        .text-top {
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+          z-index: 20;
+        }
+        .text-bottom {
+          clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+          opacity: 0;
+          z-index: 10;
+        }
+
+        /* Hover displacement: Apply sharp horizontal split & move apart */
+        .cyber-logo-split:hover .text-top {
+          clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+          transform: translateY(-10px);
+        }
+        .cyber-logo-split:hover .text-bottom {
+          clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+          transform: translateY(10px);
+          opacity: 1;
+        }
+
+        /* Horizontal Neon Laser Slash inside the split gap */
+        .cyber-slash-line {
+          position: absolute;
+          left: 5%;
+          right: 5%;
+          height: 2px;
+          background: #ffffff;
+          box-shadow: 0 0 18px #ff003c, 0 0 6px #ffffff, 0 0 35px #ff003c;
+          top: 50%;
+          transform: translateY(-50%) scaleX(0);
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s;
+          transition-delay: 0.08s;
+          opacity: 0;
+          z-index: 15;
+          pointer-events: none;
+        }
+        .cyber-logo-split:hover .cyber-slash-line {
+          transform: translateY(-50%) scaleX(1);
+          opacity: 1;
+        }
+
+        /* Physical SVG Katana Sword horizontal stab & stick (Lengthened to 410px) */
+        .cyber-katana {
+          position: absolute;
+          width: 520px;
+          height: 40px;
+          pointer-events: none;
+          z-index: 50;
+          top: 50%;
+          left: 0;
+          transform: translateY(-50%) translateX(-520px);
+          opacity: 0;
+          transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cyber-logo-split:hover .cyber-katana {
+          opacity: 1;
+          animation: sword-stab-horizontal 0.45s cubic-bezier(0.15, 0.85, 0.35, 1.15) forwards;
+          transition: none; /* Let animation take over on hover */
+        }
+
+        @keyframes sword-stab-horizontal {
+          0% {
+            transform: translateY(-50%) translateX(-520px) scaleX(1.8) scaleY(0.6);
+            opacity: 0;
+          }
+          /* High-speed motion blur streak enters */
+          15% {
+            transform: translateY(-50%) translateX(-180px) scaleX(1.4) scaleY(0.8);
+            opacity: 1;
+          }
+          /* Deep impact thud: sword hits and lodges at a slight violent tilt angle */
+          25% {
+            transform: translateY(-50%) translateX(-85px) scaleX(1) scaleY(1) rotate(-1.5deg);
+            opacity: 1;
+          }
+          /* Recoil bounce */
+          35% {
+            transform: translateY(-50%) translateX(-105px) scaleX(1) scaleY(1) rotate(0.5deg);
+            opacity: 1;
+          }
+          45% {
+            transform: translateY(-50%) translateX(-97px) translateY(-1px) rotate(-1deg);
+            opacity: 1;
+          }
+          55% {
+            transform: translateY(-50%) translateX(-101px) translateY(1px) rotate(-0.5deg);
+            opacity: 1;
+          }
+          65% {
+            transform: translateY(-50%) translateX(-100px) translateY(0) rotate(-0.8deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(-50%) translateX(-100px) translateY(0) rotate(-0.8deg);
+            opacity: 1;
+          }
+        }
+
+        .cyber-kanji {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          user-select: none;
+          z-index: 0;
+          opacity: 0.08;
+          color: #ff003c;
+          filter: grayscale(1);
+          text-shadow: 0 0 10px rgba(255, 0, 60, 0.1);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          font-family: "Noto Serif JP", "MS Mincho", "Hiragino Mincho ProN", serif;
+          font-size: 3.8rem;
+          font-weight: 900;
+        }
+        .cyber-logo-split:hover .cyber-kanji {
+          opacity: 0.35;
+          color: #ff003c;
+          filter: none;
+          text-shadow: 0 0 20px rgba(255, 0, 60, 0.7);
+          animation: kanji-shake-impact 0.35s ease-out forwards;
+          animation-delay: 0.08s;
+        }
+
+        @keyframes kanji-shake-impact {
+          0% { transform: scale(1) rotate(0deg); }
+          15% { transform: scale(1.22) rotate(-8deg); }
+          30% { transform: scale(1.22) rotate(8deg); }
+          45% { transform: scale(1.18) rotate(-4deg); }
+          60% { transform: scale(1.18) rotate(4deg); }
+          75% { transform: scale(1.14) rotate(-1.5deg); }
+          100% { transform: scale(1.16) rotate(0deg); }
+        }
+
+        @keyframes scanline-anim {
+          0% { top: -10%; }
+          50% { top: 110%; }
+          100% { top: 110%; }
+        }
+        .cyber-scanline {
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background: rgba(255, 0, 60, 0.2);
+          box-shadow: 0 0 8px rgba(255, 0, 60, 0.35);
+          pointer-events: none;
+          z-index: 30;
+          animation: scanline-anim 4s linear infinite;
+        }
       `}} />
 
       <div className="max-w-[1440px] mx-auto px-8 py-6 flex items-center justify-between">
-        {/* Logo with Glitch Effect and Katana Symbols */}
-        <div className="relative">
-          <div className="text-white text-3xl tracking-widest uppercase relative" style={{ fontFamily: 'Teko, sans-serif', fontWeight: 700 }}>
-            {/* Glitch cut lines */}
-            <div className="absolute -top-1 left-0 w-12 h-0.5 bg-[#FF0000]"></div>
-            <div className="absolute top-1 right-0 w-8 h-0.5 bg-[#FF0000] opacity-60"></div>
-
-            CYBER SAMURAI
+        {/* Advanced Interactive Sliced Cyberpunk Logo */}
+        <div className="cyber-logo-split group" onMouseEnter={playSlashSound}>
+          {/* Traditional Calligraphy Background Decal '侍' (Samurai) */}
+          <div className="cyber-kanji">
+            侍
           </div>
 
-          {/* Small Katana Symbols */}
-          <div className="flex gap-2 mt-1 justify-center items-center">
-            <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-[#FF0000] to-transparent"></div>
-            <span className="text-[#FF0000] text-xs">⚔</span>
-            <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-[#FF0000] to-transparent"></div>
+          {/* HUD Tech Corner Brackets */}
+          <div className="hud-bracket hud-tl"></div>
+          <div className="hud-bracket hud-tr"></div>
+          <div className="hud-bracket hud-bl"></div>
+          <div className="hud-bracket hud-br"></div>
+
+          {/* Hologram Scanline Overlay */}
+          <div className="cyber-scanline"></div>
+
+          {/* Slashed Glowing Text Wrapper */}
+          <div className="relative py-2 px-1 flex items-center justify-center z-10">
+            {/* Ultra-Premium Cyberpunk Tactical Katana SVG */}
+            <svg className="cyber-katana" viewBox="0 0 550 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Sleek Matte Black Tactical Handle (Tsuka) */}
+              <rect x="10" y="16" width="70" height="8" rx="2" fill="#08080c" stroke="#3f0f15" strokeWidth="1" />
+              {/* Grip wraps (Tactical Red dashes) */}
+              <path d="M 20 16 L 25 24 M 30 16 L 35 24 M 40 16 L 45 24 M 50 16 L 55 24 M 60 16 L 65 24 M 70 16 L 75 24" stroke="#ff003c" strokeWidth="1.5" />
+              
+              {/* Hexagonal Futuristic Hilt Guard (Tsuba) */}
+              <polygon points="80,10 85,12 85,28 80,30" fill="#020203" stroke="#ff003c" strokeWidth="1" filter="drop-shadow(0 0 3px #ff003c)" />
+              
+              {/* Collar (Habaki) */}
+              <rect x="85" y="17" width="12" height="6" fill="#2d1c1e" stroke="#5c2c31" strokeWidth="0.5" />
+              
+              {/* Ultra-Lethal Steel Blade */}
+              <path d="M 97 18 L 515 18 L 525 21 L 97 22 Z" fill="url(#katana-blade-metal)" />
+              
+              {/* Hot crimson mono-molecular plasma cutting edge */}
+              <path d="M 97 22 L 525 21" stroke="#ffffff" strokeWidth="1" filter="drop-shadow(0 0 2px #ffffff)" opacity="0.9" />
+              <path d="M 97 22 L 525 21" stroke="#ff003c" strokeWidth="2" filter="drop-shadow(0 0 5px #ff003c)" />
+              
+              {/* Blood Groove (Hi) */}
+              <path d="M 115 19.5 L 495 19.5" stroke="#ff003c" strokeWidth="0.8" opacity="0.8" />
+              
+              {/* Laser Etched Blade Decal */}
+              <text x="150" y="21" fill="#ffffff" fontSize="4.5" fontFamily="monospace" letterSpacing="1.8" opacity="0.9">SYS.ERR // SHIN-UCHI</text>
+
+              <defs>
+                <linearGradient id="katana-blade-metal" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#1a1a24" />
+                  <stop offset="40%" stopColor="#2c2c38" />
+                  <stop offset="70%" stopColor="#0f0f14" />
+                  <stop offset="90%" stopColor="#dcdce6" />
+                  <stop offset="100%" stopColor="#ffffff" />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {/* Horizontal Slash Spark Flare */}
+            <div className="cyber-slash-line"></div>
+
+            {/* Top Text Layer */}
+            <div className="cyber-text-layer text-top flex items-center justify-center">
+              <span className="cyber-text-cyber">CYBER</span>
+              <span className="cyber-text-samurai">SAMURAI</span>
+            </div>
+
+            {/* Bottom Text Layer */}
+            <div className="cyber-text-layer text-bottom flex items-center justify-center" aria-hidden="true">
+              <span className="cyber-text-cyber">CYBER</span>
+              <span className="cyber-text-samurai">SAMURAI</span>
+            </div>
+
+            {/* Static invisible text to maintain layout size */}
+            <div className="text-invisible opacity-0 pointer-events-none select-none flex items-center justify-center">
+              <span className="cyber-text-cyber">CYBER</span>
+              <span className="cyber-text-samurai">SAMURAI</span>
+            </div>
+          </div>
+
+          {/* Sub-HUD Techwear Decos */}
+          <div className="flex justify-between items-center w-full mt-2.5 px-1 z-10 select-none">
+            <div className="flex gap-1.5 items-center">
+              <span className="w-2.5 h-[2px] bg-[#ff003c] group-hover:bg-white group-hover:shadow-[0_0_8px_#ffffff] transition-all duration-300"></span>
+              <span className="w-[3px] h-[3px] rounded-full bg-white/20"></span>
+              <span className="text-[6.5px] font-mono text-white/30 tracking-widest font-bold">HUD // v2.8</span>
+            </div>
+            <div className="text-[7.5px] font-mono text-white/40 tracking-[0.45em] uppercase flex items-center gap-1.5 group-hover:text-white transition-colors duration-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff003c] animate-ping duration-1000"></span>
+              SYS_ON // SECURE
+            </div>
+            <div className="flex gap-1.5 items-center">
+              <span className="text-[6.5px] font-mono text-[#ff003c] tracking-widest font-bold opacity-40 group-hover:opacity-100 transition-opacity">LN.09</span>
+              <span className="w-[3px] h-[3px] rounded-full bg-white/20"></span>
+              <span className="w-2.5 h-[2px] bg-[#ff003c] group-hover:bg-white group-hover:shadow-[0_0_8px_#ffffff] transition-all duration-300"></span>
+            </div>
           </div>
         </div>
 

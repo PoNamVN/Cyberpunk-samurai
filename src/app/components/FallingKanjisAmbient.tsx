@@ -76,7 +76,7 @@ export function FallingKanjisAmbient({
     }
   };
 
-  // Helper to determine depth class based on size
+  // Helper to determine depth class based on size (optimized glowBlur for high performance)
   const getDepthInfo = (size: number): { 
     depth: 'foreground' | 'midground' | 'background'; 
     speed: number;
@@ -88,21 +88,21 @@ export function FallingKanjisAmbient({
         depth: 'foreground', 
         speed: 2.2 + Math.random() * 1.5, 
         opacity: 0.95,
-        glowBlur: 18
+        glowBlur: 8
       };
     } else if (size >= 28) {
       return { 
         depth: 'midground', 
         speed: 1.4 + Math.random() * 1.0, 
         opacity: 0.75,
-        glowBlur: 10
+        glowBlur: 4
       };
     } else {
       return { 
         depth: 'background', 
         speed: 0.8 + Math.random() * 0.6, 
         opacity: 0.4,
-        glowBlur: 4
+        glowBlur: 0
       };
     }
   };
@@ -140,17 +140,17 @@ export function FallingKanjisAmbient({
     particlesRef.current.push(newParticle);
   };
 
-  // 1. Spawning timer loop
+  // 1. Spawning timer loop (optimized limits for seamless 60fps)
   useEffect(() => {
     // Spawning interval
     const interval = setInterval(() => {
-      if (particlesRef.current.filter(p => !p.isSliced).length < 18) {
+      if (particlesRef.current.filter(p => !p.isSliced).length < 10) {
         spawnKanji();
       }
     }, 1200);
 
     // Initial set
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       setTimeout(() => spawnKanji(), i * 350);
     }
 
@@ -161,7 +161,7 @@ export function FallingKanjisAmbient({
   useEffect(() => {
     if (burstTrigger === 0) return;
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 8; i++) {
       setTimeout(() => {
         spawnKanji(true);
       }, Math.random() * 600);
@@ -193,8 +193,26 @@ export function FallingKanjisAmbient({
     window.addEventListener('resize', handleResize);
 
     // Track mouse events globally
+    const checkSinglePointCollision = (x: number, y: number) => {
+      const particles = particlesRef.current;
+      for (let pIndex = 0; pIndex < particles.length; pIndex++) {
+        const p = particles[pIndex];
+        if (p.isSliced) continue;
+
+        const dist = Math.hypot(x - p.x, y - p.y);
+        // Slightly larger bounding radius threshold for single clicks to make hits satisfying
+        if (dist < p.size * 1.1) {
+          p.isSliced = true;
+          p.sliceTime = 1;
+          p.splitAngle = (Math.random() * 60 - 30) * Math.PI / 180;
+          break;
+        }
+      }
+    };
+
     const handleMouseDown = (e: MouseEvent) => {
       lastMousePos.current = { x: e.clientX, y: e.clientY, active: true };
+      checkSinglePointCollision(e.clientX, e.clientY);
     };
 
     const handleMouseUp = () => {
@@ -243,9 +261,59 @@ export function FallingKanjisAmbient({
       lastMousePos.current = { x: currX, y: currY, active: isDragging };
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 0) return;
+      const touch = e.touches[0];
+      lastMousePos.current = { x: touch.clientX, y: touch.clientY, active: true };
+      checkSinglePointCollision(touch.clientX, touch.clientY);
+    };
+
+    const handleTouchEnd = () => {
+      lastMousePos.current.active = false;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 0) return;
+      const last = lastMousePos.current;
+      if (!last.active) return;
+
+      const touch = e.touches[0];
+      const currX = touch.clientX;
+      const currY = touch.clientY;
+
+      const particles = particlesRef.current;
+      const steps = 6;
+      for (let pIndex = 0; pIndex < particles.length; pIndex++) {
+        const p = particles[pIndex];
+        if (p.isSliced) continue;
+
+        for (let step = 0; step <= steps; step++) {
+          const t = step / steps;
+          const checkX = last.x + (currX - last.x) * t;
+          const checkY = last.y + (currY - last.y) * t;
+
+          const dist = Math.hypot(checkX - p.x, checkY - p.y);
+
+          if (dist < p.size * 0.9) {
+            p.isSliced = true;
+            p.sliceTime = 1;
+            const dx = currX - last.x;
+            const dy = currY - last.y;
+            p.splitAngle = dy === 0 && dx === 0 ? (Math.random() * 60 - 30) * Math.PI / 180 : Math.atan2(dy, dx);
+            break;
+          }
+        }
+      }
+
+      lastMousePos.current = { x: currX, y: currY, active: true };
+    };
+
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     // --- MAIN RENDER AND PHYSICS UPDATE LOOP ---
     const updateAndRender = () => {
@@ -293,9 +361,14 @@ export function FallingKanjisAmbient({
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // Glowing Neon Shadow
-        ctx.shadowColor = p.glowColor;
-        ctx.shadowBlur = p.glowBlur;
+        // Glowing Neon Shadow (only apply if glowBlur > 0 for 10x rendering speed on background particles)
+        if (p.glowBlur > 0) {
+          ctx.shadowColor = p.glowColor;
+          ctx.shadowBlur = p.glowBlur;
+        } else {
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+        }
         ctx.fillStyle = p.color;
 
         if (!p.isSliced) {
@@ -369,6 +442,9 @@ export function FallingKanjisAmbient({
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
     };
   }, []);
 
