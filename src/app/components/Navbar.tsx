@@ -254,7 +254,7 @@ export function Navbar({ onPlayClick }: NavbarProps) {
         .cyber-logo-split {
           position: relative;
           display: inline-block;
-          padding: 12px 28px;
+          padding: 3px 10px;
           cursor: pointer;
           background: linear-gradient(135deg, #050507, #0f0f12);
           border: 1px solid rgba(255, 0, 60, 0.25);
@@ -271,8 +271,8 @@ export function Navbar({ onPlayClick }: NavbarProps) {
 
         .hud-bracket {
           position: absolute;
-          width: 12px;
-          height: 12px;
+          width: 6px;
+          height: 6px;
           border-color: rgba(255, 255, 255, 0.15);
           border-style: solid;
           transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
@@ -283,10 +283,10 @@ export function Navbar({ onPlayClick }: NavbarProps) {
         .hud-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
         .hud-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
 
-        .cyber-logo-split:hover .hud-tl { transform: translate(-8px, -8px); border-color: #ffffff; filter: drop-shadow(0 0 5px #ffffff); }
-        .cyber-logo-split:hover .hud-tr { transform: translate(8px, -8px); border-color: #ff003c; filter: drop-shadow(0 0 5px #ff003c); }
-        .cyber-logo-split:hover .hud-bl { transform: translate(-8px, 8px); border-color: #ff003c; filter: drop-shadow(0 0 5px #ff003c); }
-        .cyber-logo-split:hover .hud-br { transform: translate(8px, 8px); border-color: #ffffff; filter: drop-shadow(0 0 5px #ffffff); }
+        .cyber-logo-split:hover .hud-tl { transform: translate(-4px, -4px); border-color: #ffffff; filter: drop-shadow(0 0 3px #ffffff); }
+        .cyber-logo-split:hover .hud-tr { transform: translate(4px, -4px); border-color: #ff003c; filter: drop-shadow(0 0 3px #ff003c); }
+        .cyber-logo-split:hover .hud-bl { transform: translate(-4px, 4px); border-color: #ff003c; filter: drop-shadow(0 0 3px #ff003c); }
+        .cyber-logo-split:hover .hud-br { transform: translate(4px, 4px); border-color: #ffffff; filter: drop-shadow(0 0 3px #ffffff); }
 
         .cyber-text-layer {
           position: absolute;
@@ -318,33 +318,33 @@ export function Navbar({ onPlayClick }: NavbarProps) {
         */
         .cyber-text-cyber {
           font-family: "Syncopate", sans-serif;
-          font-size: 1.15rem;
+          font-size: 0.55rem;
           font-weight: 900;
-          letter-spacing: 0.26em;
+          letter-spacing: 0.18em;
           color: #ffffff;
           -webkit-text-stroke: 1px #000000;
-          text-shadow: 2px 2px 0px #000000, 0 0 8px rgba(255, 255, 255, 0.25);
+          text-shadow: 1.5px 1.5px 0px #000000, 0 0 5px rgba(255, 255, 255, 0.25);
           transition: all 0.35s;
         }
 
         .cyber-text-samurai {
           font-family: "Orbitron", sans-serif;
-          font-size: 1.8rem;
+          font-size: 0.85rem;
           font-weight: 900;
-          letter-spacing: 0.1em;
-          margin-left: 14px;
+          letter-spacing: 0.08em;
+          margin-left: 5px;
           color: #ff003c;
           -webkit-text-stroke: 1px #000000;
-          text-shadow: 2.5px 2.5px 0px #000000, 0 0 12px rgba(255, 0, 60, 0.5);
+          text-shadow: 1.8px 1.8px 0px #000000, 0 0 6px rgba(255, 0, 60, 0.5);
           transition: all 0.35s;
         }
 
         .cyber-logo-split:hover .cyber-text-cyber {
-          text-shadow: 3.5px 3.5px 0px #ff003c, 0 0 10px rgba(255, 255, 255, 0.4);
+          text-shadow: 2px 2px 0px #ff003c, 0 0 8px rgba(255, 255, 255, 0.4);
         }
 
         .cyber-logo-split:hover .cyber-text-samurai {
-          text-shadow: 3.5px 3.5px 0px #ffffff, 0 0 15px rgba(255, 0, 60, 0.7);
+          text-shadow: 2px 2px 0px #ffffff, 0 0 10px rgba(255, 0, 60, 0.7);
         }
 
         /* 
@@ -364,11 +364,11 @@ export function Navbar({ onPlayClick }: NavbarProps) {
         /* Hover displacement: Apply sharp horizontal split & move apart */
         .cyber-logo-split:hover .text-top {
           clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
-          transform: translateY(-10px);
+          transform: translateY(-2.5px);
         }
         .cyber-logo-split:hover .text-bottom {
           clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
-          transform: translateY(10px);
+          transform: translateY(2.5px);
           opacity: 1;
         }
 
@@ -393,16 +393,16 @@ export function Navbar({ onPlayClick }: NavbarProps) {
           opacity: 1;
         }
 
-        /* Physical SVG Katana Sword horizontal stab & stick (Lengthened to 410px) */
+        /* Physical SVG Katana Sword horizontal stab & stick (Lengthened to 290px) */
         .cyber-katana {
           position: absolute;
-          width: 520px;
-          height: 40px;
+          width: 290px;
+          height: 18px;
           pointer-events: none;
           z-index: 50;
           top: 50%;
           left: 0;
-          transform: translateY(-50%) translateX(-520px);
+          transform: translateY(-50%) translateX(-290px);
           opacity: 0;
           transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -414,38 +414,38 @@ export function Navbar({ onPlayClick }: NavbarProps) {
 
         @keyframes sword-stab-horizontal {
           0% {
-            transform: translateY(-50%) translateX(-520px) scaleX(1.8) scaleY(0.6);
+            transform: translateY(-50%) translateX(-290px) scaleX(1.8) scaleY(0.6);
             opacity: 0;
           }
           /* High-speed motion blur streak enters */
           15% {
-            transform: translateY(-50%) translateX(-180px) scaleX(1.4) scaleY(0.8);
+            transform: translateY(-50%) translateX(-100px) scaleX(1.4) scaleY(0.8);
             opacity: 1;
           }
           /* Deep impact thud: sword hits and lodges at a slight violent tilt angle */
           25% {
-            transform: translateY(-50%) translateX(-85px) scaleX(1) scaleY(1) rotate(-1.5deg);
+            transform: translateY(-50%) translateX(-48px) scaleX(1) scaleY(1) rotate(-1.5deg);
             opacity: 1;
           }
           /* Recoil bounce */
           35% {
-            transform: translateY(-50%) translateX(-105px) scaleX(1) scaleY(1) rotate(0.5deg);
+            transform: translateY(-50%) translateX(-59px) scaleX(1) scaleY(1) rotate(0.5deg);
             opacity: 1;
           }
           45% {
-            transform: translateY(-50%) translateX(-97px) translateY(-1px) rotate(-1deg);
+            transform: translateY(-50%) translateX(-54px) translateY(-1px) rotate(-1deg);
             opacity: 1;
           }
           55% {
-            transform: translateY(-50%) translateX(-101px) translateY(1px) rotate(-0.5deg);
+            transform: translateY(-50%) translateX(-57px) translateY(1px) rotate(-0.5deg);
             opacity: 1;
           }
           65% {
-            transform: translateY(-50%) translateX(-100px) translateY(0) rotate(-0.8deg);
+            transform: translateY(-50%) translateX(-56px) translateY(0) rotate(-0.8deg);
             opacity: 1;
           }
           100% {
-            transform: translateY(-50%) translateX(-100px) translateY(0) rotate(-0.8deg);
+            transform: translateY(-50%) translateX(-56px) translateY(0) rotate(-0.8deg);
             opacity: 1;
           }
         }
@@ -465,7 +465,7 @@ export function Navbar({ onPlayClick }: NavbarProps) {
           text-shadow: 0 0 10px rgba(255, 0, 60, 0.1);
           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           font-family: "Noto Serif JP", "MS Mincho", "Hiragino Mincho ProN", serif;
-          font-size: 3.8rem;
+          font-size: 1.8rem;
           font-weight: 900;
         }
         .cyber-logo-split:hover .cyber-kanji {
@@ -505,7 +505,7 @@ export function Navbar({ onPlayClick }: NavbarProps) {
         }
       `}} />
 
-      <div className="max-w-[1440px] mx-auto px-8 py-6 flex items-center justify-between">
+      <div className="max-w-[1440px] mx-auto px-8 py-1 flex items-center justify-between">
         {/* Advanced Interactive Sliced Cyberpunk Logo */}
         <div className="cyber-logo-split group" onMouseEnter={playSlashSound}>
           {/* Traditional Calligraphy Background Decal '侍' (Samurai) */}
@@ -523,7 +523,7 @@ export function Navbar({ onPlayClick }: NavbarProps) {
           <div className="cyber-scanline"></div>
 
           {/* Slashed Glowing Text Wrapper */}
-          <div className="relative py-2 px-1 flex items-center justify-center z-10">
+          <div className="relative py-1 px-1 flex items-center justify-center z-10">
             {/* Ultra-Premium Cyberpunk Tactical Katana SVG */}
             <svg className="cyber-katana" viewBox="0 0 550 40" fill="none" xmlns="http://www.w3.org/2000/svg">
               {/* Sleek Matte Black Tactical Handle (Tsuka) */}
@@ -584,33 +584,33 @@ export function Navbar({ onPlayClick }: NavbarProps) {
           </div>
 
           {/* Sub-HUD Techwear Decos */}
-          <div className="flex justify-between items-center w-full mt-2.5 px-1 z-10 select-none">
-            <div className="flex gap-1.5 items-center">
-              <span className="w-2.5 h-[2px] bg-[#ff003c] group-hover:bg-white group-hover:shadow-[0_0_8px_#ffffff] transition-all duration-300"></span>
-              <span className="w-[3px] h-[3px] rounded-full bg-white/20"></span>
-              <span className="text-[6.5px] font-mono text-white/30 tracking-widest font-bold">HUD // v2.8</span>
+          <div className="flex justify-between items-center w-full mt-1 px-1 z-10 select-none">
+            <div className="flex gap-1 items-center">
+              <span className="w-2 h-[1.5px] bg-[#ff003c] group-hover:bg-white group-hover:shadow-[0_0_8px_#ffffff] transition-all duration-300"></span>
+              <span className="w-[2px] h-[2px] rounded-full bg-white/20"></span>
+              <span className="text-[5.5px] font-mono text-white/30 tracking-widest font-bold">HUD // v2.8</span>
             </div>
-            <div className="text-[7.5px] font-mono text-white/40 tracking-[0.45em] uppercase flex items-center gap-1.5 group-hover:text-white transition-colors duration-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#ff003c] animate-ping duration-1000"></span>
-              SYS_ON // SECURE
+            <div className="text-[6.5px] font-mono text-white/40 tracking-[0.4em] uppercase flex items-center gap-1 group-hover:text-white transition-colors duration-300">
+              <span className="w-1 h-1 rounded-full bg-[#ff003c] animate-ping duration-1000"></span>
+              SYS_ON
             </div>
-            <div className="flex gap-1.5 items-center">
-              <span className="text-[6.5px] font-mono text-[#ff003c] tracking-widest font-bold opacity-40 group-hover:opacity-100 transition-opacity">LN.09</span>
-              <span className="w-[3px] h-[3px] rounded-full bg-white/20"></span>
-              <span className="w-2.5 h-[2px] bg-[#ff003c] group-hover:bg-white group-hover:shadow-[0_0_8px_#ffffff] transition-all duration-300"></span>
+            <div className="flex gap-1 items-center">
+              <span className="text-[5.5px] font-mono text-[#ff003c] tracking-widest font-bold opacity-40 group-hover:opacity-100 transition-opacity">LN.09</span>
+              <span className="w-[2px] h-[2px] rounded-full bg-white/20"></span>
+              <span className="w-2 h-[1.5px] bg-[#ff003c] group-hover:bg-white group-hover:shadow-[0_0_8px_#ffffff] transition-all duration-300"></span>
             </div>
           </div>
         </div>
 
         {/* Navigation Links with Cyberpunk Style */}
-        <div className="hidden md:flex items-center gap-10 font-mono text-base tracking-[0.28em] relative">
+        <div className="hidden md:flex items-center gap-8 font-mono text-[11px] tracking-[0.25em] relative">
           <button
             onClick={() => handleScrollTo('#hero')}
             className="text-white/80 hover:text-white hover:drop-shadow-[0_0_12px_#FF0000] transition-all duration-300 cursor-pointer uppercase relative group"
             style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}
           >
             HOME
-            <span className="absolute -bottom-1.5 left-0 w-0 h-[3px] bg-[#FF0000] shadow-[0_0_10px_#FF0000] group-hover:w-full transition-all duration-300"></span>
+            <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#FF0000] shadow-[0_0_10px_#FF0000] group-hover:w-full transition-all duration-300"></span>
           </button>
           <button
             onClick={() => handleScrollTo('#lore')}
@@ -618,7 +618,7 @@ export function Navbar({ onPlayClick }: NavbarProps) {
             style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}
           >
             LORE
-            <span className="absolute -bottom-1.5 left-0 w-0 h-[3px] bg-[#FF0000] shadow-[0_0_10px_#FF0000] group-hover:w-full transition-all duration-300"></span>
+            <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#FF0000] shadow-[0_0_10px_#FF0000] group-hover:w-full transition-all duration-300"></span>
           </button>
           <button
             onClick={() => handleScrollTo('#showcase')}
@@ -626,24 +626,25 @@ export function Navbar({ onPlayClick }: NavbarProps) {
             style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}
           >
             WARRIORS
-            <span className="absolute -bottom-1.5 left-0 w-0 h-[3px] bg-[#FF0000] shadow-[0_0_10px_#FF0000] group-hover:w-full transition-all duration-300"></span>
+            <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#FF0000] shadow-[0_0_10px_#FF0000] group-hover:w-full transition-all duration-300"></span>
           </button>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           {/* Cyberpunk Audio HUD Switch */}
           <button
             onClick={toggleAudio}
-            className={`relative border-2 px-5 py-2.5 font-mono text-xs tracking-widest transition-all duration-300 flex items-center gap-2 group ${isPlaying
-                ? 'border-[#FF0000] text-[#FF0000] shadow-[0_0_15px_rgba(255,0,0,0.4)]'
+            className={`relative border px-3.5 py-1.5 font-mono text-[10px] tracking-widest transition-all duration-300 flex items-center gap-2 group ${isPlaying
+                ? 'border-[#FF0000] text-[#FF0000] shadow-[0_0_12px_rgba(255,0,0,0.4)]'
                 : 'border-white/20 text-white/50 hover:border-white/50 hover:text-white'
               }`}
             style={{
-              clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))'
+              clipPath: 'polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px))',
+              height: '32px'
             }}
           >
             {/* Pulsing indicator */}
-            <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-[#FF0000] animate-pulse shadow-[0_0_8px_#FF0000]' : 'bg-white/20'}`}></span>
+            <span className={`w-1.5 h-1.5 rounded-full ${isPlaying ? 'bg-[#FF0000] animate-pulse shadow-[0_0_8px_#FF0000]' : 'bg-white/20'}`}></span>
 
             <span style={{ fontFamily: 'Oswald, sans-serif', fontWeight: 600 }}>
               AUDIO // {isPlaying ? 'SYS_ONLINE' : 'SYS_OFFLINE'}
@@ -651,10 +652,10 @@ export function Navbar({ onPlayClick }: NavbarProps) {
 
             {/* Visualizer bar mini animation when playing */}
             {isPlaying && (
-              <div className="flex items-end gap-0.5 h-3 ml-1">
-                <div className="w-0.5 bg-[#FF0000] animate-[bar-wave_0.8s_ease-in-out_infinite_alternate]" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-0.5 bg-[#FF0000] animate-[bar-wave_0.6s_ease-in-out_infinite_alternate]" style={{ animationDelay: '0.3s' }}></div>
-                <div className="w-0.5 bg-[#FF0000] animate-[bar-wave_0.9s_ease-in-out_infinite_alternate]" style={{ animationDelay: '0.2s' }}></div>
+              <div className="flex items-end gap-0.5 h-2.5 ml-0.5">
+                <div className="w-[1.5px] bg-[#FF0000] animate-[bar-wave_0.8s_ease-in-out_infinite_alternate]" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-[1.5px] bg-[#FF0000] animate-[bar-wave_0.6s_ease-in-out_infinite_alternate]" style={{ animationDelay: '0.3s' }}></div>
+                <div className="w-[1.5px] bg-[#FF0000] animate-[bar-wave_0.9s_ease-in-out_infinite_alternate]" style={{ animationDelay: '0.2s' }}></div>
               </div>
             )}
           </button>
@@ -662,11 +663,11 @@ export function Navbar({ onPlayClick }: NavbarProps) {
           {/* Ultra-Premium Dual-Chassis Play Widget */}
           <div className="flex items-center pointer-events-auto">
             {/* Left Indicator Chamber: Pulse Beacon */}
-            <div className="bg-[#FF0000]/10 border-t border-b border-l border-[#FF0000]/40 text-[#FF0000] font-mono text-[9px] px-3.5 py-4 tracking-widest hidden lg:flex items-center justify-center gap-1.5 font-bold shadow-[inset_0_0_8px_rgba(255,0,0,0.1)]"
+            <div className="bg-[#FF0000]/10 border-t border-b border-l border-[#FF0000]/40 text-[#FF0000] font-mono text-[8px] px-2.5 tracking-widest hidden lg:flex items-center justify-center gap-1.5 font-bold shadow-[inset_0_0_8px_rgba(255,0,0,0.1)]"
               style={{
-                clipPath: 'polygon(8px 0px, 100% 0px, 100% 100%, 0px 100%, 0px 8px)',
+                clipPath: 'polygon(6px 0px, 100% 0px, 100% 100%, 0px 100%, 0px 6px)',
                 borderRight: 'none',
-                height: '47.5px'
+                height: '32px'
               }}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#FF0000] animate-[ping_1.2s_infinite]"></span>
@@ -678,21 +679,21 @@ export function Navbar({ onPlayClick }: NavbarProps) {
               onClick={onPlayClick}
               onMouseEnter={handlePlayMouseEnter}
               onMouseLeave={handlePlayMouseLeave}
-              className="relative text-white hover:text-black bg-black/75 hover:bg-[#FF0000] transition-all duration-300 border border-[#FF0000] px-10 py-3 uppercase tracking-[0.22em] font-bold overflow-hidden group cursor-pointer nav-play-btn"
+              className="relative text-white hover:text-black bg-black/75 hover:bg-[#FF0000] transition-all duration-300 border border-[#FF0000] px-6 uppercase tracking-[0.15em] font-bold overflow-hidden group cursor-pointer nav-play-btn"
               style={{
                 fontFamily: 'Oswald, sans-serif',
                 fontWeight: 700,
                 borderRadius: '0px',
-                clipPath: 'polygon(0px 0px, calc(100% - 12px) 0px, 100% 12px, 100% 100%, 0px 100%, 0px 0px)',
+                clipPath: 'polygon(0px 0px, calc(100% - 8px) 0px, 100% 8px, 100% 100%, 0px 100%, 0px 0px)',
                 animation: 'neon-glow-pulse 4s infinite ease-in-out',
-                height: '47.5px'
+                height: '32px'
               }}
             >
               {/* Top Cyan Sliding Scanning Laser */}
-              <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#00FFFF] to-transparent animate-[scan-laser_2s_linear_infinite_reverse]"></div>
+              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#00FFFF] to-transparent animate-[scan-laser_2s_linear_infinite_reverse]"></div>
 
               {/* Bottom Red Sliding Scanning Laser */}
-              <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#FF0000] to-transparent animate-[scan-laser_2s_linear_infinite]"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#FF0000] to-transparent animate-[scan-laser_2s_linear_infinite]"></div>
 
               {/* High-Tech Dot Grid Texture Overlay */}
               <div className="absolute inset-0 bg-[radial-gradient(rgba(255,0,0,0.18)_1.2px,transparent_1.2px)] bg-[size:5px_5px] opacity-40 group-hover:opacity-0 transition-opacity"></div>
@@ -701,45 +702,47 @@ export function Navbar({ onPlayClick }: NavbarProps) {
               <span className="absolute inset-0 block w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
 
               {/* Main Scrambling Decryption Text Label */}
-              <span className="relative z-10 flex items-center justify-center gap-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] font-extrabold group-hover:opacity-0 transition-opacity duration-200">
+              <span className="relative z-10 flex items-center justify-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] font-extrabold group-hover:opacity-0 transition-opacity duration-200 text-xs">
                 {playBtnText}
               </span>
-              <span className="absolute inset-0 flex items-center justify-center bg-white text-black font-extrabold opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 gap-2">
+              <span className="absolute inset-0 flex items-center justify-center bg-white text-black font-extrabold opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 gap-1.5 text-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping"></span>
                 PLAY NOW
               </span>
 
               {/* Glitch Overlay 1 (Cyan Shadow) */}
-              <span className="absolute inset-0 bg-[#00FFFF] text-black px-10 py-3 uppercase tracking-[0.22em] font-bold border border-[#00FFFF] pointer-events-none nav-play-glitch-1 z-0 flex items-center justify-center"
+              <span className="absolute inset-0 bg-[#00FFFF] text-black px-6 uppercase tracking-[0.15em] font-bold border border-[#00FFFF] pointer-events-none nav-play-glitch-1 z-0 flex items-center justify-center text-xs"
                 style={{
                   fontFamily: 'Oswald, sans-serif',
                   fontWeight: 700,
                   borderRadius: '0px',
-                  clipPath: 'polygon(0px 0px, calc(100% - 12px) 0px, 100% 12px, 100% 100%, 0px 100%, 0px 0px)',
-                  top: '-2.5px',
-                  left: '-2.5px'
+                  clipPath: 'polygon(0px 0px, calc(100% - 8px) 0px, 100% 8px, 100% 100%, 0px 100%, 0px 0px)',
+                  top: '-2px',
+                  left: '-2px',
+                  height: '32px'
                 }}
               >
                 PLAY NOW
               </span>
 
               {/* Glitch Overlay 2 (Magenta Shadow) */}
-              <span className="absolute inset-0 bg-[#FF00FF] text-white px-10 py-3 uppercase tracking-[0.22em] font-bold border border-[#FF00FF] pointer-events-none nav-play-glitch-2 z-0 flex items-center justify-center"
+              <span className="absolute inset-0 bg-[#FF00FF] text-white px-6 uppercase tracking-[0.15em] font-bold border border-[#FF00FF] pointer-events-none nav-play-glitch-2 z-0 flex items-center justify-center text-xs"
                 style={{
                   fontFamily: 'Oswald, sans-serif',
                   fontWeight: 700,
                   borderRadius: '0px',
-                  clipPath: 'polygon(0px 0px, calc(100% - 12px) 0px, 100% 12px, 100% 100%, 0px 100%, 0px 0px)',
-                  top: '2.5px',
-                  left: '2.5px'
+                  clipPath: 'polygon(0px 0px, calc(100% - 8px) 0px, 100% 8px, 100% 100%, 0px 100%, 0px 0px)',
+                  top: '2px',
+                  left: '2px',
+                  height: '32px'
                 }}
               >
                 PLAY NOW
               </span>
             </button>
           </div>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
   );
 }
